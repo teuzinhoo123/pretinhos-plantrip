@@ -3,216 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EuroPlanner Pro | Master</title>
+    <title>EuroPlanner 26 | Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; }
-        .tab-active { border-bottom: 3px solid #0f172a; color: #0f172a; font-weight: 800; }
-        .card { background: white; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f4f7fb; /* Fundo cinza/azul clarinho da referência */
+            color: #0f172a; 
+        }
+        
+        /* O famoso "Bento Card" da imagem */
+        .bento-card { 
+            background: white; 
+            border-radius: 28px; 
+            padding: 2rem;
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.04); /* Sombra super suave */
+            border: 1px solid rgba(255,255,255,0.8);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .bento-card:hover {
+            box-shadow: 0 15px 40px -10px rgba(0,0,0,0.08);
+        }
+
+        /* Cartão de Destaque com Gradiente (como o "Total Revenue" da imagem) */
+        .bento-card-primary {
+            background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+            color: white;
+            border-radius: 32px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 40px -15px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Navegação em estilo Pílula (Pill Navigation) */
+        .nav-pill { 
+            font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; 
+            color: #64748b; padding: 10px 20px; border-radius: 100px; transition: all 0.2s; 
+        }
+        .nav-pill:hover { color: #0f172a; background: #e2e8f0; }
+        .nav-active { color: #4f46e5; background: #eef2ff; } /* Azul clarinho pro ativo */
+
         [v-cloak] { display: none; }
-        input, select { background: transparent; border: none; outline: none; width: 100%; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .btn-primary { background: #0f172a; color: white; border-radius: 12px; font-weight: 700; padding: 10px 20px; transition: all 0.2s; }
-        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body class="antialiased">
     <div id="app" v-cloak>
         
-        <div v-if="!autenticado" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950 p-4">
-            <div class="bg-white p-10 w-full max-w-sm rounded-3xl shadow-2xl text-center">
-                <div class="text-4xl mb-4 text-slate-900 font-black">2026</div>
-                <h2 class="text-sm font-bold text-slate-400 uppercase tracking-[0.3em] mb-8">Euro Access</h2>
-                <input type="password" v-model="inputSenha" @keyup.enter="verificarSenha" placeholder="Senha" 
-                       class="w-full p-4 border rounded-2xl mb-4 text-center border-slate-200 bg-slate-50 focus:bg-white transition">
-                <button @click="verificarSenha" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold hover:bg-black transition">DESBLOQUEAR</button>
+        <div v-if="!autenticado" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-md p-6">
+            <div class="bento-card w-full max-w-sm text-center !p-10">
+                <div class="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center mx-auto mb-6 text-indigo-600">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <h2 class="text-2xl font-black text-slate-800 tracking-tight mb-2">EuroPlanner</h2>
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-8">Acesso Restrito</p>
+                <input type="password" v-model="inputSenha" @keyup.enter="verificarSenha" placeholder="Senha Mestra" class="w-full p-4 bg-slate-50 border-none rounded-2xl mb-4 text-center font-bold focus:ring-2 focus:ring-indigo-500 outline-none transition">
+                <button @click="verificarSenha" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold hover:bg-indigo-600 transition">Desbloquear</button>
             </div>
         </div>
 
-        <div v-else class="max-w-6xl mx-auto min-h-screen flex flex-col">
+        <div v-else class="max-w-6xl mx-auto p-4 md:p-8">
             
-            <header class="p-6 md:px-8 border-b bg-white/80 backdrop-blur-md sticky top-0 z-40 shadow-sm">
-                <div class="flex justify-between items-center mb-6">
-                    <div>
-                        <h1 class="text-xl font-black tracking-tighter uppercase text-slate-900">EuroPlanner Pro</h1>
-                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Master Travel System</p>
+            <header class="flex flex-col md:flex-row justify-between items-center gap-6 mb-12">
+                <div class="flex items-center gap-4 w-full md:w-auto">
+                    <div class="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center font-black text-indigo-600 text-xl border border-slate-100">
+                        🇪🇺
                     </div>
-                    <div class="flex items-center gap-4">
-                        <div class="text-right border-r pr-4">
-                            <span class="text-[9px] font-bold text-slate-400 block uppercase">Euro Hoje</span>
-                            <span class="font-bold text-blue-600 text-sm">R$ {{ config.cambio }}</span>
-                        </div>
-                        <button @click="logout" class="text-slate-300 hover:text-red-500 transition"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke-width="2" stroke-linecap="round"/></svg></button>
+                    <div>
+                        <h1 class="text-xl font-black tracking-tighter text-slate-800">EuroPlanner <span class="font-light text-slate-400">2026</span></h1>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Dashboard de Formatura</p>
                     </div>
                 </div>
-
-                <nav class="flex gap-6 md:gap-10 overflow-x-auto text-[11px] font-black text-slate-400 uppercase tracking-widest no-scrollbar border-b border-slate-50">
-                    <button v-for="tab in abas" :key="tab.id" @click="abaAtual = tab.id" :class="{'tab-active': abaAtual === tab.id}" class="pb-3 whitespace-nowrap transition-all border-b-2 border-transparent hover:text-slate-900">
-                        {{ tab.label }}
-                    </button>
+                
+                <nav class="flex gap-2 overflow-x-auto no-scrollbar w-full md:w-auto pb-2 md:pb-0">
+                    <a href="index.html" class="nav-pill nav-active">Home</a>
+                    <a href="roteiro.html" class="nav-pill">Roteiro</a>
+                    <a href="passagens.html" class="nav-pill">Vôos</a>
+                    <a href="checklist.html" class="nav-pill">Checklist</a>
+                    <a href="ajustes.html" class="nav-pill text-slate-400"><svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
                 </nav>
             </header>
 
-            <main class="flex-grow p-4 md:p-8">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8">
                 
-                <div v-if="abaAtual === 'resumo'" class="space-y-10">
+                <div class="md:col-span-8 space-y-6 md:space-y-8">
                     
-                    <div class="card p-8 bg-slate-900 text-white overflow-hidden relative">
-                        <div class="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
-                            <div class="text-center md:text-left">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em]">Cronograma de Viagem</span>
-                                <div class="text-2xl md:text-4xl font-black mt-2">
-                                    {{ formatarDataDisplay(config.dataPartida) }} <span class="text-slate-600 font-light mx-2">→</span> {{ formatarDataDisplay(config.dataRetorno) }}
-                                </div>
-                                <p class="text-slate-400 text-sm mt-2 font-medium" v-if="config.dataPartida">{{ diasFaltando }}</p>
+                    <div class="bento-card-primary flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden">
+                        <div class="absolute -right-20 -top-20 w-64 h-64 bg-white opacity-5 rounded-full blur-2xl pointer-events-none"></div>
+                        <div class="absolute left-10 -bottom-20 w-40 h-40 bg-white opacity-10 rounded-full blur-xl pointer-events-none"></div>
+                        
+                        <div class="relative z-10 text-center md:text-left">
+                            <span class="text-[10px] font-bold text-indigo-200 uppercase tracking-widest block mb-2">Contagem Regressiva</span>
+                            <h2 class="text-3xl md:text-5xl font-black tracking-tighter">
+                                {{ formatarData(config.dataPartida) }} <span class="text-indigo-300 font-light mx-2">/</span> {{ formatarData(config.dataRetorno) }}
+                            </h2>
+                            <div class="mt-6">
+                                <span class="px-4 py-2 bg-white/10 backdrop-blur-md rounded-xl text-xs font-bold uppercase tracking-widest text-white border border-white/20 shadow-xl">
+                                    {{ diasFaltando }}
+                                </span>
                             </div>
-                            <div class="bg-white/10 px-6 py-4 rounded-2xl backdrop-blur-sm text-center">
-                                <span class="text-[10px] font-bold uppercase block text-slate-300">Duração</span>
-                                <span class="text-3xl font-black">{{ duracaoViagem }} Dias</span>
-                            </div>
+                        </div>
+                        <div class="relative z-10 text-right">
+                            <span class="text-[10px] font-bold text-indigo-200 uppercase tracking-widest block mb-1">Duração</span>
+                            <span class="text-4xl font-black">{{ duracaoViagem }}<span class="text-lg font-bold text-indigo-200 ml-1">dias</span></span>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="card p-6 border-l-8 border-slate-900">
-                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Budget Total</span>
-                            <div class="text-3xl font-bold mt-1">R$ {{ config.orcamentoTotal.toLocaleString() }}</div>
-                        </div>
-                        <div class="card p-6 border-l-8 border-blue-500">
-                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Investido</span>
-                            <div class="text-3xl font-bold mt-1 text-slate-800">R$ {{ totalGeralRealizado.toLocaleString() }}</div>
-                        </div>
-                        <div class="card p-6 border-l-8" :class="saldoRestante < 0 ? 'border-red-500 bg-red-50' : 'border-green-500'">
-                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Saldo Atual</span>
-                            <div class="text-3xl font-bold mt-1" :class="saldoRestante < 0 ? 'text-red-600' : 'text-green-600'">R$ {{ saldoRestante.toLocaleString() }}</div>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <div class="card p-6">
-                            <h3 class="text-xs font-black uppercase tracking-widest mb-6">🗺️ Roteiro por Cidade</h3>
-                            <div class="space-y-6">
-                                <div v-for="cidade in roteiro" :key="cidade.id" class="flex gap-4 items-start">
-                                    <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center font-black text-slate-500">{{ cidade.noites }}n</div>
-                                    <div class="flex-grow">
-                                        <div class="flex justify-between items-center">
-                                            <input v-model="cidade.nome" class="font-bold text-sm uppercase" placeholder="Cidade">
-                                            <span class="text-[10px] font-black text-slate-300">{{ cidade.moeda }}</span>
-                                        </div>
-                                        <input v-model="cidade.hospedagem" class="text-xs text-slate-500 w-full" placeholder="Hotel / Airbnb">
-                                    </div>
-                                    <button @click="removeItem('roteiro', roteiro.indexOf(cidade))" class="text-slate-200 hover:text-red-500">×</button>
-                                </div>
-                                <button @click="addItem('roteiro')" class="w-full p-4 border-2 border-dashed border-slate-100 rounded-2xl text-[10px] font-black uppercase text-slate-400 hover:bg-slate-50 transition">+ Adicionar Parada</button>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bento-card flex items-start gap-5">
+                            <div class="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center shrink-0">
+                                <span class="text-xl">💰</span>
                             </div>
-                        </div>
-
-                        <div class="card p-6">
-                            <h3 class="text-xs font-black uppercase tracking-widest mb-6">📊 Investimento por Área</h3>
-                            <div class="space-y-6">
-                                <div v-for="cat in resumoCategorias" :key="cat.nome" class="space-y-2">
-                                    <div class="flex justify-between items-end">
-                                        <span class="text-[10px] font-black text-slate-400 uppercase">{{ cat.nome }}</span>
-                                        <span class="text-xs font-bold">R$ {{ cat.valor.toLocaleString() }}</span>
-                                    </div>
-                                    <div class="bg-slate-50 h-3 rounded-full overflow-hidden">
-                                        <div :style="{width: cat.porcentagem + '%'}" class="bg-slate-900 h-full transition-all"></div>
-                                    </div>
-                                </div>
+                            <div>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Budget Formatura</span>
+                                <span class="text-2xl font-black text-slate-800 tracking-tight">R$ {{ config.orcamentoTotal.toLocaleString() }}</span>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div v-if="abaAtual === 'passagens'" class="space-y-6">
-                    <div class="flex justify-between items-center">
-                        <h2 class="text-sm font-black uppercase italic italic font-light tracking-widest">✈️ Passagens</h2>
-                        <button @click="addItem('passagens')" class="btn-primary text-[10px] uppercase">+ Novo Trecho</button>
-                    </div>
-                    <div class="card overflow-x-auto border-none shadow-xl">
-                        <table class="w-full text-left text-xs">
-                            <thead class="bg-slate-900 text-slate-400 font-black border-b border-slate-800">
-                                <tr>
-                                    <th class="p-5 uppercase tracking-tighter">Trecho / Voo</th>
-                                    <th class="p-5 uppercase tracking-tighter">Opção 1 (BRL)</th>
-                                    <th class="p-5 uppercase tracking-tighter">Opção 2 (BRL)</th>
-                                    <th class="p-5 text-right uppercase tracking-tighter">Melhor Preço</th>
-                                    <th class="p-5 w-10"></th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-100">
-                                <tr v-for="(p, idx) in passagens" :key="p.id">
-                                    <td class="p-5"><input v-model="p.trecho" class="font-bold text-slate-800" placeholder="Ex: BRA ➔ LIS"></td>
-                                    <td class="p-5 font-medium">R$ <input type="number" v-model.number="p.opt1" class="w-20 inline"></td>
-                                    <td class="p-5 font-medium text-slate-400">R$ <input type="number" v-model.number="p.opt2" class="w-20 inline"></td>
-                                    <td class="p-5 text-right font-black text-green-600">R$ {{ Math.min(p.opt1 || 99999, p.opt2 || 99999).toLocaleString() }}</td>
-                                    <td class="p-5"><button @click="removeItem('passagens', idx)" class="text-slate-300 hover:text-red-500 font-black">×</button></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div v-if="abaAtual === 'checklist'" class="space-y-6">
-                    <div class="flex justify-between items-center">
-                        <h2 class="text-sm font-black uppercase italic italic font-light tracking-widest text-slate-800">✅ Checklist de Preparação</h2>
-                        <button @click="addItem('checklist')" class="btn-primary text-[10px] uppercase">+ Nova Tarefa</button>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div v-for="(t, idx) in checklist" :key="t.id" class="card p-5 flex items-center gap-4 transition hover:shadow-lg cursor-pointer" @click="t.done = !t.done">
-                            <div :class="t.done ? 'bg-slate-900 border-slate-900' : 'border-slate-200'" class="w-6 h-6 border-2 rounded-xl flex items-center justify-center text-white transition-all">
-                                <svg v-if="t.done" class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>
-                            </div>
-                            <div class="flex-grow">
-                                <input v-model="t.tarefa" :class="{'line-through text-slate-300': t.done}" class="font-bold text-sm text-slate-700 pointer-events-none" @click.stop>
-                                <div class="text-[9px] font-black uppercase tracking-widest text-slate-400 mt-1">{{ t.prioridade }} Prioridade</div>
-                            </div>
-                            <button @click.stop="removeItem('checklist', idx)" class="text-slate-200 hover:text-red-500 font-bold">×</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div v-if="abaAtual === 'ajustes'" class="max-w-xl mx-auto space-y-10">
-                    <div class="text-center">
-                        <h2 class="text-2xl font-black uppercase">Configurações</h2>
-                        <p class="text-slate-400 text-xs mt-2 uppercase tracking-[0.2em]">Defina as bases do seu projeto</p>
-                    </div>
-                    
-                    <div class="card p-8 space-y-8">
-                        <div>
-                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Orçamento Geral (R$)</label>
-                            <input type="number" v-model.number="config.orcamentoTotal" class="text-3xl font-black p-2 border-b-2 border-slate-100 focus:border-slate-900 transition w-full">
                         </div>
                         
-                        <div class="grid grid-cols-2 gap-8">
-                            <div>
-                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Data de Partida</label>
-                                <input type="date" v-model="config.dataPartida" class="font-bold text-slate-800 p-2 border-b-2 border-slate-100 w-full">
+                        <div class="bento-card flex items-start gap-5">
+                            <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center shrink-0">
+                                <span class="text-xl">💳</span>
                             </div>
                             <div>
-                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Data de Retorno</label>
-                                <input type="date" v-model="config.dataRetorno" class="font-bold text-slate-800 p-2 border-b-2 border-slate-100 w-full">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Total Já Investido</span>
+                                <span class="text-2xl font-black text-slate-800 tracking-tight">R$ {{ totalGeralRealizado.toLocaleString() }}</span>
                             </div>
-                        </div>
-
-                        <div>
-                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Câmbio Manual (Backup)</label>
-                            <input type="number" step="0.01" v-model.number="config.cambio" class="font-bold text-slate-800 p-2 border-b-2 border-slate-100 w-full">
                         </div>
                     </div>
 
-                    <div class="card p-6 bg-red-50 border-red-100 text-center">
-                        <button @click="resetarDados" class="text-[10px] font-black uppercase text-red-500 tracking-widest hover:underline">Zerar Banco de Dados Local</button>
+                    <div class="bento-card">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-sm font-black uppercase tracking-widest text-slate-800">Cidades do Roteiro</h3>
+                            <a href="roteiro.html" class="text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-lg hover:bg-indigo-100 transition">Ver Detalhes</a>
+                        </div>
+                        <div class="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
+                            <div v-for="(cidade, idx) in roteiro" :key="cidade.id" class="min-w-[140px] bg-slate-50 p-4 rounded-[20px] border border-slate-100 shrink-0 relative overflow-hidden group">
+                                <div class="absolute top-0 right-0 p-3 text-[10px] font-black text-slate-300 group-hover:scale-110 transition-transform">0{{idx + 1}}</div>
+                                <div class="text-2xl mb-2">{{ cidade.moeda === 'EUR' ? '🇪🇺' : '🌍' }}</div>
+                                <h4 class="font-black text-slate-800 uppercase tracking-tighter text-sm truncate pr-6">{{ cidade.nome }}</h4>
+                                <span class="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">{{ cidade.noites }} noites</span>
+                            </div>
+                            <div v-if="roteiro.length === 0" class="min-w-[140px] bg-slate-50 p-4 rounded-[20px] border border-dashed border-slate-300 flex flex-col items-center justify-center text-center opacity-70">
+                                <span class="text-slate-400 mb-2">🗺️</span>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase">Adicionar Cidades</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-            </main>
+                <div class="md:col-span-4 space-y-6 md:space-y-8">
+                    
+                    <div class="bento-card bg-slate-900 text-white !border-slate-800">
+                        <div class="flex justify-between items-center mb-8">
+                            <h3 class="text-xs font-black uppercase tracking-widest text-white">Próximos Passos</h3>
+                            <span class="w-6 h-6 bg-slate-800 rounded-full flex items-center justify-center text-xs font-bold text-slate-300">{{ proximasTarefas.length }}</span>
+                        </div>
+                        <div class="space-y-4">
+                            <div v-for="item in proximasTarefas" :key="item.id" class="p-4 bg-slate-800/50 rounded-2xl border border-slate-700/50 flex items-start gap-3">
+                                <div :class="{'bg-red-400': item.prioridade === 'Alta', 'bg-amber-400': item.prioridade === 'Média', 'bg-emerald-400': item.prioridade === 'Baixa'}" class="w-2 h-2 rounded-full mt-1.5 shrink-0"></div>
+                                <div>
+                                    <p class="text-sm font-bold text-slate-100 leading-tight">{{ item.tarefa }}</p>
+                                    <p class="text-[9px] font-bold uppercase text-slate-400 mt-1.5 tracking-widest">{{ item.prioridade }} PRIORIDADE</p>
+                                </div>
+                            </div>
+                            <div v-if="proximasTarefas.length === 0" class="text-center py-6 text-slate-500 text-xs font-bold uppercase">
+                                Todas as tarefas concluídas! ✨
+                            </div>
+                        </div>
+                        <a href="checklist.html" class="block w-full text-center py-3 mt-6 bg-slate-800 rounded-xl text-xs font-bold text-slate-300 uppercase tracking-widest hover:bg-slate-700 transition">Abrir Checklist</a>
+                    </div>
 
-            <footer class="p-12 text-center border-t border-slate-100">
-                <p class="text-[10px] font-black uppercase tracking-[0.5em] text-slate-300">EuroPlanner 2026 • Design & Strategy</p>
-            </footer>
+                    <div class="bento-card">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Cotação do Euro</span>
+                                <span class="text-2xl font-black text-slate-800 tracking-tight">R$ {{ config.cambio }}</span>
+                            </div>
+                            <div class="w-10 h-10 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-500">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </div>
+                        </div>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Valores baseados no Banco Central</p>
+                    </div>
+
+                </div>
+            </div>
+            
         </div>
     </div>
 
@@ -225,23 +203,13 @@
                 return {
                     autenticado: false,
                     inputSenha: '',
-                    abaAtual: 'resumo',
-                    abas: [
-                        { id: 'resumo', label: '📊 Home' },
-                        { id: 'passagens', label: '✈️ Vôos' },
-                        { id: 'hospedagem', label: '🏨 Hotéis' },
-                        { id: 'passeios', label: '🎭 Tours' },
-                        { id: 'gastos', label: '💳 Gastos' },
-                        { id: 'checklist', label: '✅ Tasks' },
-                        { id: 'ajustes', label: '⚙️ Ajustes' }
-                    ],
-                    config: { orcamentoTotal: 25000, cambio: 6.10, cambioOnline: false, dataPartida: '', dataRetorno: '', viajantes: 2 },
+                    config: { orcamentoTotal: 0, cambio: 6.10, dataPartida: '', dataRetorno: '' },
+                    checklist: [],
+                    roteiro: [],
                     passagens: [],
                     hospedagem: [],
                     passeios: [],
-                    gastos: [],
-                    checklist: [],
-                    roteiro: []
+                    gastos: []
                 }
             },
             computed: {
@@ -252,91 +220,37 @@
                     const tGastos = this.gastos.reduce((acc, g) => acc + (g.valor || 0), 0);
                     return tPassagens + tHospedagem + tPasseios + tGastos;
                 },
-                saldoRestante() { return this.config.orcamentoTotal - this.totalGeralRealizado; },
                 duracaoViagem() {
                     if (!this.config.dataPartida || !this.config.dataRetorno) return 0;
                     const diff = new Date(this.config.dataRetorno) - new Date(this.config.dataPartida);
                     return Math.ceil(diff / (1000 * 60 * 60 * 24));
                 },
                 diasFaltando() {
-                    const hoje = new Date();
-                    const partida = new Date(this.config.dataPartida);
-                    const diff = partida - hoje;
+                    if (!this.config.dataPartida) return "Datas não definidas";
+                    const diff = new Date(this.config.dataPartida) - new Date();
                     const dias = Math.ceil(diff / (1000 * 60 * 60 * 24));
-                    return dias > 0 ? `Faltam ${dias} dias para o embarque ✈️` : 'Viagem em curso ou finalizada!';
+                    return dias > 0 ? `Faltam ${dias} dias` : 'A viagem começou!';
                 },
-                resumoCategorias() {
-                    const soma = (arr, valFn) => arr.reduce((acc, item) => acc + valFn(item), 0);
-                    const cats = [
-                        { nome: 'Transporte', valor: soma(this.passagens, p => Math.min(p.opt1 || 0, p.opt2 || 99999)) },
-                        { nome: 'Acomodação', valor: soma(this.hospedagem, h => Math.min(h.opt1 || 0, h.opt2 || 99999)) },
-                        { nome: 'Atrações', valor: soma(this.passeios, a => a.valorEur * this.config.cambio) },
-                        { nome: 'Logística/Geral', valor: soma(this.gastos, g => g.valor || 0) }
-                    ];
-                    const total = this.totalGeralRealizado || 1;
-                    return cats.map(c => ({ ...c, porcentagem: (c.valor / total) * 100 }));
+                proximasTarefas() {
+                    const ordem = { 'Alta': 1, 'Média': 2, 'Baixa': 3 };
+                    return this.checklist.filter(t => !t.done).sort((a,b) => ordem[a.prioridade] - ordem[b.prioridade]).slice(0, 3);
                 }
             },
-            watch: {
-                passagens: { handler() { this.salvar(); }, deep: true },
-                hospedagem: { handler() { this.salvar(); }, deep: true },
-                passeios: { handler() { this.salvar(); }, deep: true },
-                gastos: { handler() { this.salvar(); }, deep: true },
-                checklist: { handler() { this.salvar(); }, deep: true },
-                roteiro: { handler() { this.salvar(); }, deep: true },
-                config: { handler() { this.salvar(); }, deep: true }
-            },
             methods: {
-                formatarDataDisplay(data) {
-                    if (!data) return '00/00/00';
-                    return new Date(data).toLocaleDateString('pt-br', { day: '2-digit', month: '2-digit', year: '2-digit' });
-                },
-                async buscarCambio() {
-                    try {
-                        const res = await fetch('https://economia.awesomeapi.com.br/last/EUR-BRL');
-                        const data = await res.json();
-                        this.config.cambio = parseFloat(data.EURBRL.bid).toFixed(2);
-                        this.config.cambioOnline = true;
-                    } catch (e) { this.config.cambioOnline = false; }
-                },
-                addItem(tipo) {
-                    const schemas = {
-                        passagens: { id: Date.now(), trecho: '', opt1: 0, opt2: 0 },
-                        hospedagem: { id: Date.now(), cidade: '', opt1: 0, opt2: 0, noites: 1 },
-                        passeios: { id: Date.now(), nome: '', cidade: '', valorEur: 0, link: '' },
-                        gastos: { id: Date.now(), categoria: 'Outros', desc: '', valor: 0 },
-                        checklist: { id: Date.now(), tarefa: 'Nova Tarefa', prioridade: 'Média', done: false },
-                        roteiro: { id: Date.now(), nome: 'Nova Cidade', noites: 1, hospedagem: '', moeda: 'EUR' }
-                    };
-                    this[tipo].push(schemas[tipo]);
-                },
-                removeItem(tipo, idx) { this[tipo].splice(idx, 1); },
+                formatarData(d) { return d ? new Date(d).toLocaleDateString('pt-br', {day:'2-digit', month:'2-digit'}) : '--/--'; },
                 verificarSenha() {
                     if (this.inputSenha === SENHA_MESTRE) {
                         this.autenticado = true;
                         localStorage.setItem('auth_euro_pro', 'true');
-                        this.buscarCambio();
                     }
-                },
-                logout() { this.autenticado = false; localStorage.removeItem('auth_euro_pro'); },
-                salvar() {
-                    const data = { passagens: this.passagens, hospedagem: this.hospedagem, passeios: this.passeios, gastos: this.gastos, checklist: this.checklist, roteiro: this.roteiro, config: this.config };
-                    localStorage.setItem('euro_data_master_v3', JSON.stringify(data));
                 },
                 carregar() {
-                    const saved = localStorage.getItem('euro_data_master_v3');
-                    if (saved) {
-                        const p = JSON.parse(saved);
-                        Object.assign(this, p);
-                    }
-                },
-                resetarDados() { if(confirm("Deseja apagar tudo?")) { localStorage.clear(); location.reload(); } }
+                    const saved = localStorage.getItem('euro_data_master_v4');
+                    if (saved) { Object.assign(this, JSON.parse(saved)); }
+                }
             },
             mounted() {
-                if (localStorage.getItem('auth_euro_pro') === 'true') {
-                    this.autenticado = true;
-                    this.buscarCambio();
-                }
+                if (localStorage.getItem('auth_euro_pro') === 'true') this.autenticado = true;
                 this.carregar();
             }
         }).mount('#app')

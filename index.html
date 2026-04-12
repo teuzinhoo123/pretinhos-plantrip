@@ -3,258 +3,341 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EuroPlanner Pro | Matheus</title>
+    <title>EuroPlanner Pro | Master</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
-        .card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; transition: all 0.2s ease; }
-        .card:hover { border-color: #cbd5e1; }
-        input:focus { outline: 2px solid #3b82f6; outline-offset: 1px; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; }
+        .tab-active { border-bottom: 3px solid #0f172a; color: #0f172a; font-weight: 800; }
+        .card { background: white; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         [v-cloak] { display: none; }
+        input, select { background: transparent; border: none; outline: none; width: 100%; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .btn-primary { background: #0f172a; color: white; border-radius: 12px; font-weight: 700; padding: 10px 20px; transition: all 0.2s; }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body class="antialiased">
     <div id="app" v-cloak>
         
-        <transition name="fade">
-            <div v-if="!autenticado" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900 px-4">
-                <div class="bg-white p-8 w-full max-w-sm rounded-2xl shadow-2xl text-center">
-                    <div class="text-3xl mb-4">🌍</div>
-                    <h2 class="text-xl font-semibold mb-2">Área Restrita</h2>
-                    <p class="text-slate-500 text-sm mb-6">Insira a senha do projeto Europa 2026</p>
-                    <input type="password" v-model="inputSenha" @keyup.enter="verificarSenha" 
-                           class="w-full p-3 border rounded-xl mb-4 text-center border-slate-200 focus:ring-2 focus:ring-slate-400 outline-none">
-                    <button @click="verificarSenha" class="w-full bg-slate-800 text-white py-3 rounded-xl font-medium hover:bg-slate-700 transition">Entrar</button>
-                    <p v-if="erro" class="text-red-500 text-xs mt-4 font-medium italic">Acesso negado. Tente novamente.</p>
-                </div>
+        <div v-if="!autenticado" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950 p-4">
+            <div class="bg-white p-10 w-full max-w-sm rounded-3xl shadow-2xl text-center">
+                <div class="text-4xl mb-4 text-slate-900 font-black">2026</div>
+                <h2 class="text-sm font-bold text-slate-400 uppercase tracking-[0.3em] mb-8">Euro Access</h2>
+                <input type="password" v-model="inputSenha" @keyup.enter="verificarSenha" placeholder="Senha" 
+                       class="w-full p-4 border rounded-2xl mb-4 text-center border-slate-200 bg-slate-50 focus:bg-white transition">
+                <button @click="verificarSenha" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold hover:bg-black transition">DESBLOQUEAR</button>
             </div>
-        </transition>
+        </div>
 
-        <main v-if="autenticado" class="max-w-6xl mx-auto p-4 md:p-8">
+        <div v-else class="max-w-6xl mx-auto min-h-screen flex flex-col">
             
-            <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6 border-b border-slate-200 pb-8">
-                <div>
-                    <h1 class="text-2xl font-bold tracking-tight text-slate-900">EuroPlanner <span class="text-slate-400 font-light">v3</span></h1>
-                    <div class="flex items-center gap-2 mt-1">
-                        <span :class="statusCores.bg" class="w-2 h-2 rounded-full animate-pulse"></span>
-                        <span class="text-xs font-medium uppercase tracking-wider text-slate-500">{{ statusGeral }}</span>
+            <header class="p-6 md:px-8 border-b bg-white/80 backdrop-blur-md sticky top-0 z-40 shadow-sm">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h1 class="text-xl font-black tracking-tighter uppercase text-slate-900">EuroPlanner Pro</h1>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Master Travel System</p>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="text-right border-r pr-4">
+                            <span class="text-[9px] font-bold text-slate-400 block uppercase">Euro Hoje</span>
+                            <span class="font-bold text-blue-600 text-sm">R$ {{ config.cambio }}</span>
+                        </div>
+                        <button @click="logout" class="text-slate-300 hover:text-red-500 transition"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke-width="2" stroke-linecap="round"/></svg></button>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-4 bg-white p-2 rounded-xl border border-slate-100 shadow-sm">
-                    <div class="px-3 border-r border-slate-100">
-                        <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-tighter text-right">Câmbio Oficial (Hoje)</span>
-                        <div class="flex items-center gap-2">
-                            <span v-if="cambioOnline" class="text-[10px] bg-green-50 text-green-600 px-1.5 rounded font-bold">LIVE</span>
-                            <span class="font-bold text-slate-700">€1 = R$ {{ cambio }}</span>
-                        </div>
-                    </div>
-                    <button @click="logout" class="p-2 text-slate-400 hover:text-red-500 transition">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <nav class="flex gap-6 md:gap-10 overflow-x-auto text-[11px] font-black text-slate-400 uppercase tracking-widest no-scrollbar border-b border-slate-50">
+                    <button v-for="tab in abas" :key="tab.id" @click="abaAtual = tab.id" :class="{'tab-active': abaAtual === tab.id}" class="pb-3 whitespace-nowrap transition-all border-b-2 border-transparent hover:text-slate-900">
+                        {{ tab.label }}
                     </button>
-                </div>
+                </nav>
             </header>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                <div class="card p-6">
-                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Orçamento Total</span>
-                    <div class="flex items-baseline gap-2">
-                        <span class="text-slate-400 text-sm italic italic font-light">R$</span>
-                        <input type="number" v-model="orcamento" class="text-3xl font-semibold bg-transparent w-full focus:outline-none">
-                    </div>
-                </div>
-                <div class="card p-6">
-                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Realizado</span>
-                    <div class="flex items-baseline gap-2">
-                        <span class="text-slate-400 text-sm">R$</span>
-                        <div class="text-3xl font-semibold" :class="totalGasto > orcamento ? 'text-red-600' : 'text-slate-800'">
-                            {{ totalGasto.toLocaleString('pt-br', {minimumFractionDigits: 2}) }}
+            <main class="flex-grow p-4 md:p-8">
+                
+                <div v-if="abaAtual === 'resumo'" class="space-y-10">
+                    
+                    <div class="card p-8 bg-slate-900 text-white overflow-hidden relative">
+                        <div class="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
+                            <div class="text-center md:text-left">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em]">Cronograma de Viagem</span>
+                                <div class="text-2xl md:text-4xl font-black mt-2">
+                                    {{ formatarDataDisplay(config.dataPartida) }} <span class="text-slate-600 font-light mx-2">→</span> {{ formatarDataDisplay(config.dataRetorno) }}
+                                </div>
+                                <p class="text-slate-400 text-sm mt-2 font-medium" v-if="config.dataPartida">{{ diasFaltando }}</p>
+                            </div>
+                            <div class="bg-white/10 px-6 py-4 rounded-2xl backdrop-blur-sm text-center">
+                                <span class="text-[10px] font-bold uppercase block text-slate-300">Duração</span>
+                                <span class="text-3xl font-black">{{ duracaoViagem }} Dias</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="card p-6" :class="saldoRestante < 1000 ? 'bg-amber-50 border-amber-200' : ''">
-                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Saldo Disponível</span>
-                    <div class="flex items-baseline gap-2">
-                        <span class="text-slate-400 text-sm">R$</span>
-                        <div class="text-3xl font-semibold" :class="saldoRestante < 0 ? 'text-red-600' : 'text-green-600'">
-                            {{ saldoRestante.toLocaleString('pt-br', {minimumFractionDigits: 2}) }}
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                <section>
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-[0.2em]">✈️ Comparador de Trechos</h3>
-                        <button @click="addPassagem" class="text-[10px] bg-slate-800 text-white px-3 py-1 rounded-full uppercase font-bold">+ Adicionar</button>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="card p-6 border-l-8 border-slate-900">
+                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Budget Total</span>
+                            <div class="text-3xl font-bold mt-1">R$ {{ config.orcamentoTotal.toLocaleString() }}</div>
+                        </div>
+                        <div class="card p-6 border-l-8 border-blue-500">
+                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Investido</span>
+                            <div class="text-3xl font-bold mt-1 text-slate-800">R$ {{ totalGeralRealizado.toLocaleString() }}</div>
+                        </div>
+                        <div class="card p-6 border-l-8" :class="saldoRestante < 0 ? 'border-red-500 bg-red-50' : 'border-green-500'">
+                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Saldo Atual</span>
+                            <div class="text-3xl font-bold mt-1" :class="saldoRestante < 0 ? 'text-red-600' : 'text-green-600'">R$ {{ saldoRestante.toLocaleString() }}</div>
+                        </div>
                     </div>
-                    <div class="card overflow-hidden shadow-sm">
-                        <table class="w-full text-left text-sm">
-                            <thead class="bg-slate-50 text-slate-500 border-b border-slate-100">
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="card p-6">
+                            <h3 class="text-xs font-black uppercase tracking-widest mb-6">🗺️ Roteiro por Cidade</h3>
+                            <div class="space-y-6">
+                                <div v-for="cidade in roteiro" :key="cidade.id" class="flex gap-4 items-start">
+                                    <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center font-black text-slate-500">{{ cidade.noites }}n</div>
+                                    <div class="flex-grow">
+                                        <div class="flex justify-between items-center">
+                                            <input v-model="cidade.nome" class="font-bold text-sm uppercase" placeholder="Cidade">
+                                            <span class="text-[10px] font-black text-slate-300">{{ cidade.moeda }}</span>
+                                        </div>
+                                        <input v-model="cidade.hospedagem" class="text-xs text-slate-500 w-full" placeholder="Hotel / Airbnb">
+                                    </div>
+                                    <button @click="removeItem('roteiro', roteiro.indexOf(cidade))" class="text-slate-200 hover:text-red-500">×</button>
+                                </div>
+                                <button @click="addItem('roteiro')" class="w-full p-4 border-2 border-dashed border-slate-100 rounded-2xl text-[10px] font-black uppercase text-slate-400 hover:bg-slate-50 transition">+ Adicionar Parada</button>
+                            </div>
+                        </div>
+
+                        <div class="card p-6">
+                            <h3 class="text-xs font-black uppercase tracking-widest mb-6">📊 Investimento por Área</h3>
+                            <div class="space-y-6">
+                                <div v-for="cat in resumoCategorias" :key="cat.nome" class="space-y-2">
+                                    <div class="flex justify-between items-end">
+                                        <span class="text-[10px] font-black text-slate-400 uppercase">{{ cat.nome }}</span>
+                                        <span class="text-xs font-bold">R$ {{ cat.valor.toLocaleString() }}</span>
+                                    </div>
+                                    <div class="bg-slate-50 h-3 rounded-full overflow-hidden">
+                                        <div :style="{width: cat.porcentagem + '%'}" class="bg-slate-900 h-full transition-all"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="abaAtual === 'passagens'" class="space-y-6">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-sm font-black uppercase italic italic font-light tracking-widest">✈️ Passagens</h2>
+                        <button @click="addItem('passagens')" class="btn-primary text-[10px] uppercase">+ Novo Trecho</button>
+                    </div>
+                    <div class="card overflow-x-auto border-none shadow-xl">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-900 text-slate-400 font-black border-b border-slate-800">
                                 <tr>
-                                    <th class="p-4 font-semibold uppercase text-[10px]">Trecho</th>
-                                    <th class="p-4 font-semibold uppercase text-[10px]">Euros</th>
-                                    <th class="p-4 text-right font-semibold uppercase text-[10px]">Subtotal (BRL)</th>
+                                    <th class="p-5 uppercase tracking-tighter">Trecho / Voo</th>
+                                    <th class="p-5 uppercase tracking-tighter">Opção 1 (BRL)</th>
+                                    <th class="p-5 uppercase tracking-tighter">Opção 2 (BRL)</th>
+                                    <th class="p-5 text-right uppercase tracking-tighter">Melhor Preço</th>
+                                    <th class="p-5 w-10"></th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-50">
-                                <tr v-for="p in passagens" :key="p.id" class="hover:bg-slate-50 transition">
-                                    <td class="p-4"><input v-model="p.trecho" class="bg-transparent font-medium w-full"></td>
-                                    <td class="p-4 flex items-center gap-1">
-                                        <span class="text-slate-400">€</span>
-                                        <input type="number" v-model="p.valorEur" class="w-16 bg-transparent font-semibold focus:text-blue-600">
-                                    </td>
-                                    <td class="p-4 text-right font-bold text-slate-600 italic italic font-light">
-                                        R$ {{ (p.valorEur * cambio).toLocaleString('pt-br', {minimumFractionDigits: 2}) }}
-                                    </td>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr v-for="(p, idx) in passagens" :key="p.id">
+                                    <td class="p-5"><input v-model="p.trecho" class="font-bold text-slate-800" placeholder="Ex: BRA ➔ LIS"></td>
+                                    <td class="p-5 font-medium">R$ <input type="number" v-model.number="p.opt1" class="w-20 inline"></td>
+                                    <td class="p-5 font-medium text-slate-400">R$ <input type="number" v-model.number="p.opt2" class="w-20 inline"></td>
+                                    <td class="p-5 text-right font-black text-green-600">R$ {{ Math.min(p.opt1 || 99999, p.opt2 || 99999).toLocaleString() }}</td>
+                                    <td class="p-5"><button @click="removeItem('passagens', idx)" class="text-slate-300 hover:text-red-500 font-black">×</button></td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                </section>
+                </div>
 
-                <section>
-                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-[0.2em] mb-4">✅ Checklist Estratégico</h3>
-                    <div class="space-y-3">
-                        <div v-for="item in checklist" :key="item.id" 
-                             @click="item.done = !item.done"
-                             class="card p-4 flex items-center justify-between cursor-pointer hover:shadow-md transition group">
-                            <div class="flex items-center gap-4">
-                                <div :class="item.done ? 'bg-green-500 border-green-500' : 'border-slate-300'" 
-                                     class="w-5 h-5 border-2 rounded-lg flex items-center justify-center text-white transition-all">
-                                    <svg v-if="item.done" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>
-                                </div>
-                                <span :class="item.done ? 'line-through text-slate-400' : 'text-slate-700'" class="font-medium text-sm">{{ item.tarefa }}</span>
+                <div v-if="abaAtual === 'checklist'" class="space-y-6">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-sm font-black uppercase italic italic font-light tracking-widest text-slate-800">✅ Checklist de Preparação</h2>
+                        <button @click="addItem('checklist')" class="btn-primary text-[10px] uppercase">+ Nova Tarefa</button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div v-for="(t, idx) in checklist" :key="t.id" class="card p-5 flex items-center gap-4 transition hover:shadow-lg cursor-pointer" @click="t.done = !t.done">
+                            <div :class="t.done ? 'bg-slate-900 border-slate-900' : 'border-slate-200'" class="w-6 h-6 border-2 rounded-xl flex items-center justify-center text-white transition-all">
+                                <svg v-if="t.done" class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>
                             </div>
-                            <span :class="{
-                                'bg-red-50 text-red-600 border-red-100': item.prioridade === 'Alta',
-                                'bg-amber-50 text-amber-600 border-amber-100': item.prioridade === 'Média',
-                                'bg-slate-50 text-slate-500 border-slate-100': item.prioridade === 'Baixa'
-                            }" class="text-[9px] px-2 py-1 rounded border uppercase font-black tracking-wider">
-                                {{ item.prioridade }}
-                            </span>
+                            <div class="flex-grow">
+                                <input v-model="t.tarefa" :class="{'line-through text-slate-300': t.done}" class="font-bold text-sm text-slate-700 pointer-events-none" @click.stop>
+                                <div class="text-[9px] font-black uppercase tracking-widest text-slate-400 mt-1">{{ t.prioridade }} Prioridade</div>
+                            </div>
+                            <button @click.stop="removeItem('checklist', idx)" class="text-slate-200 hover:text-red-500 font-bold">×</button>
                         </div>
                     </div>
-                </section>
-            </div>
+                </div>
 
-            <footer class="mt-24 border-t border-slate-200 pt-8 flex flex-col items-center">
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em]">Projeto de Planejamento Consolidado</p>
-                <p class="text-[10px] text-slate-300 mt-2 italic font-light">Matheus • TCC/Viagem 2026</p>
+                <div v-if="abaAtual === 'ajustes'" class="max-w-xl mx-auto space-y-10">
+                    <div class="text-center">
+                        <h2 class="text-2xl font-black uppercase">Configurações</h2>
+                        <p class="text-slate-400 text-xs mt-2 uppercase tracking-[0.2em]">Defina as bases do seu projeto</p>
+                    </div>
+                    
+                    <div class="card p-8 space-y-8">
+                        <div>
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Orçamento Geral (R$)</label>
+                            <input type="number" v-model.number="config.orcamentoTotal" class="text-3xl font-black p-2 border-b-2 border-slate-100 focus:border-slate-900 transition w-full">
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-8">
+                            <div>
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Data de Partida</label>
+                                <input type="date" v-model="config.dataPartida" class="font-bold text-slate-800 p-2 border-b-2 border-slate-100 w-full">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Data de Retorno</label>
+                                <input type="date" v-model="config.dataRetorno" class="font-bold text-slate-800 p-2 border-b-2 border-slate-100 w-full">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Câmbio Manual (Backup)</label>
+                            <input type="number" step="0.01" v-model.number="config.cambio" class="font-bold text-slate-800 p-2 border-b-2 border-slate-100 w-full">
+                        </div>
+                    </div>
+
+                    <div class="card p-6 bg-red-50 border-red-100 text-center">
+                        <button @click="resetarDados" class="text-[10px] font-black uppercase text-red-500 tracking-widest hover:underline">Zerar Banco de Dados Local</button>
+                    </div>
+                </div>
+
+            </main>
+
+            <footer class="p-12 text-center border-t border-slate-100">
+                <p class="text-[10px] font-black uppercase tracking-[0.5em] text-slate-300">EuroPlanner 2026 • Design & Strategy</p>
             </footer>
-
-        </main>
+        </div>
     </div>
 
     <script>
         const { createApp } = Vue
-
-        const SENHA_MESTRE = 'europa2026'; // ALTE RE AQUI
+        const SENHA_MESTRE = 'europa2026';
 
         createApp({
             data() {
                 return {
                     autenticado: false,
                     inputSenha: '',
-                    erro: false,
-                    cambio: 6.10,
-                    cambioOnline: false,
-                    orcamento: 20000,
-                    passagens: [
-                        { id: 1, trecho: 'BRA ➔ LIS (Ida)', valorEur: 850 },
-                        { id: 2, trecho: 'LIS ➔ PAR (Voo)', valorEur: 55 },
-                        { id: 3, trecho: 'PAR ➔ ROM (Trem)', valorEur: 120 }
+                    abaAtual: 'resumo',
+                    abas: [
+                        { id: 'resumo', label: '📊 Home' },
+                        { id: 'passagens', label: '✈️ Vôos' },
+                        { id: 'hospedagem', label: '🏨 Hotéis' },
+                        { id: 'passeios', label: '🎭 Tours' },
+                        { id: 'gastos', label: '💳 Gastos' },
+                        { id: 'checklist', label: '✅ Tasks' },
+                        { id: 'ajustes', label: '⚙️ Ajustes' }
                     ],
-                    checklist: [
-                        { id: 1, tarefa: 'Renovar Passaporte', prioridade: 'Alta', done: false },
-                        { id: 2, tarefa: 'Seguro Viagem Internacional', prioridade: 'Alta', done: true },
-                        { id: 3, tarefa: 'Comprar eSIM (Holafly)', prioridade: 'Média', done: false },
-                        { id: 4, tarefa: 'Fazer Roteiro no Google Maps', prioridade: 'Baixa', done: false }
-                    ]
+                    config: { orcamentoTotal: 25000, cambio: 6.10, cambioOnline: false, dataPartida: '', dataRetorno: '', viajantes: 2 },
+                    passagens: [],
+                    hospedagem: [],
+                    passeios: [],
+                    gastos: [],
+                    checklist: [],
+                    roteiro: []
+                }
+            },
+            computed: {
+                totalGeralRealizado() {
+                    const tPassagens = this.passagens.reduce((acc, p) => acc + Math.min(p.opt1 || 0, p.opt2 || 99999), 0);
+                    const tHospedagem = this.hospedagem.reduce((acc, h) => acc + Math.min(h.opt1 || 0, h.opt2 || 99999), 0);
+                    const tPasseios = this.passeios.reduce((acc, a) => acc + (a.valorEur * this.config.cambio), 0);
+                    const tGastos = this.gastos.reduce((acc, g) => acc + (g.valor || 0), 0);
+                    return tPassagens + tHospedagem + tPasseios + tGastos;
+                },
+                saldoRestante() { return this.config.orcamentoTotal - this.totalGeralRealizado; },
+                duracaoViagem() {
+                    if (!this.config.dataPartida || !this.config.dataRetorno) return 0;
+                    const diff = new Date(this.config.dataRetorno) - new Date(this.config.dataPartida);
+                    return Math.ceil(diff / (1000 * 60 * 60 * 24));
+                },
+                diasFaltando() {
+                    const hoje = new Date();
+                    const partida = new Date(this.config.dataPartida);
+                    const diff = partida - hoje;
+                    const dias = Math.ceil(diff / (1000 * 60 * 60 * 24));
+                    return dias > 0 ? `Faltam ${dias} dias para o embarque ✈️` : 'Viagem em curso ou finalizada!';
+                },
+                resumoCategorias() {
+                    const soma = (arr, valFn) => arr.reduce((acc, item) => acc + valFn(item), 0);
+                    const cats = [
+                        { nome: 'Transporte', valor: soma(this.passagens, p => Math.min(p.opt1 || 0, p.opt2 || 99999)) },
+                        { nome: 'Acomodação', valor: soma(this.hospedagem, h => Math.min(h.opt1 || 0, h.opt2 || 99999)) },
+                        { nome: 'Atrações', valor: soma(this.passeios, a => a.valorEur * this.config.cambio) },
+                        { nome: 'Logística/Geral', valor: soma(this.gastos, g => g.valor || 0) }
+                    ];
+                    const total = this.totalGeralRealizado || 1;
+                    return cats.map(c => ({ ...c, porcentagem: (c.valor / total) * 100 }));
                 }
             },
             watch: {
-                // AUTO-SAVE: Sempre que algo mudar, grava no navegador
-                passagens: { handler() { this.salvarDados(); }, deep: true },
-                checklist: { handler() { this.salvarDados(); }, deep: true },
-                orcamento() { this.salvarDados(); },
-                cambio() { this.salvarDados(); }
-            },
-            computed: {
-                totalGasto() {
-                    return this.passagens.reduce((acc, p) => acc + (p.valorEur * this.cambio), 0);
-                },
-                saldoRestante() {
-                    return this.orcamento - this.totalGasto;
-                },
-                statusGeral() {
-                    if (this.saldoRestante < 0) return 'Orçamento Estourado';
-                    if (this.saldoRestante < 1500) return 'Próximo do Limite';
-                    return 'Dentro do Planejado';
-                },
-                statusCores() {
-                    if (this.saldoRestante < 0) return { bg: 'bg-red-500' };
-                    if (this.saldoRestante < 1500) return { bg: 'bg-amber-400' };
-                    return { bg: 'bg-green-500' };
-                }
+                passagens: { handler() { this.salvar(); }, deep: true },
+                hospedagem: { handler() { this.salvar(); }, deep: true },
+                passeios: { handler() { this.salvar(); }, deep: true },
+                gastos: { handler() { this.salvar(); }, deep: true },
+                checklist: { handler() { this.salvar(); }, deep: true },
+                roteiro: { handler() { this.salvar(); }, deep: true },
+                config: { handler() { this.salvar(); }, deep: true }
             },
             methods: {
+                formatarDataDisplay(data) {
+                    if (!data) return '00/00/00';
+                    return new Date(data).toLocaleDateString('pt-br', { day: '2-digit', month: '2-digit', year: '2-digit' });
+                },
                 async buscarCambio() {
                     try {
-                        const response = await fetch('https://economia.awesomeapi.com.br/last/EUR-BRL');
-                        const data = await response.json();
-                        this.cambio = parseFloat(data.EURBRL.bid).toFixed(2);
-                        this.cambioOnline = true;
-                    } catch (error) {
-                        this.cambioOnline = false;
-                    }
+                        const res = await fetch('https://economia.awesomeapi.com.br/last/EUR-BRL');
+                        const data = await res.json();
+                        this.config.cambio = parseFloat(data.EURBRL.bid).toFixed(2);
+                        this.config.cambioOnline = true;
+                    } catch (e) { this.config.cambioOnline = false; }
                 },
+                addItem(tipo) {
+                    const schemas = {
+                        passagens: { id: Date.now(), trecho: '', opt1: 0, opt2: 0 },
+                        hospedagem: { id: Date.now(), cidade: '', opt1: 0, opt2: 0, noites: 1 },
+                        passeios: { id: Date.now(), nome: '', cidade: '', valorEur: 0, link: '' },
+                        gastos: { id: Date.now(), categoria: 'Outros', desc: '', valor: 0 },
+                        checklist: { id: Date.now(), tarefa: 'Nova Tarefa', prioridade: 'Média', done: false },
+                        roteiro: { id: Date.now(), nome: 'Nova Cidade', noites: 1, hospedagem: '', moeda: 'EUR' }
+                    };
+                    this[tipo].push(schemas[tipo]);
+                },
+                removeItem(tipo, idx) { this[tipo].splice(idx, 1); },
                 verificarSenha() {
                     if (this.inputSenha === SENHA_MESTRE) {
                         this.autenticado = true;
-                        localStorage.setItem('auth_europa', 'true');
+                        localStorage.setItem('auth_euro_pro', 'true');
                         this.buscarCambio();
-                    } else {
-                        this.erro = true;
-                        this.inputSenha = '';
                     }
                 },
-                logout() {
-                    this.autenticado = false;
-                    localStorage.removeItem('auth_europa');
+                logout() { this.autenticado = false; localStorage.removeItem('auth_euro_pro'); },
+                salvar() {
+                    const data = { passagens: this.passagens, hospedagem: this.hospedagem, passeios: this.passeios, gastos: this.gastos, checklist: this.checklist, roteiro: this.roteiro, config: this.config };
+                    localStorage.setItem('euro_data_master_v3', JSON.stringify(data));
                 },
-                addPassagem() {
-                    this.passagens.push({ id: Date.now(), trecho: 'Novo trecho', valorEur: 0 });
-                },
-                salvarDados() {
-                    const store = { 
-                        passagens: this.passagens, 
-                        checklist: this.checklist, 
-                        orcamento: this.orcamento,
-                        cambio: this.cambio 
-                    };
-                    localStorage.setItem('travel_app_data', JSON.stringify(store));
-                },
-                carregarDados() {
-                    const saved = localStorage.getItem('travel_app_data');
+                carregar() {
+                    const saved = localStorage.getItem('euro_data_master_v3');
                     if (saved) {
-                        const parsed = JSON.parse(saved);
-                        this.passagens = parsed.passagens;
-                        this.checklist = parsed.checklist;
-                        this.orcamento = parsed.orcamento;
-                        this.cambio = parsed.cambio;
+                        const p = JSON.parse(saved);
+                        Object.assign(this, p);
                     }
-                }
+                },
+                resetarDados() { if(confirm("Deseja apagar tudo?")) { localStorage.clear(); location.reload(); } }
             },
             mounted() {
-                if (localStorage.getItem('auth_europa') === 'true') {
+                if (localStorage.getItem('auth_euro_pro') === 'true') {
                     this.autenticado = true;
                     this.buscarCambio();
                 }
-                this.carregarDados();
+                this.carregar();
             }
         }).mount('#app')
     </script>

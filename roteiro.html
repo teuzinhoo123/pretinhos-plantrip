@@ -53,33 +53,45 @@
 <body class="antialiased">
     <div id="app" v-cloak>
         
-        <div class="max-w-6xl mx-auto p-4 md:p-10 pb-0">
-            <header class="flex flex-col md:flex-row justify-between items-center gap-6 mb-10">
+        <div v-if="!autenticado" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-md p-6">
+            <div class="bento-card w-full max-w-sm text-center !p-10">
+                <div class="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center mx-auto mb-6 text-indigo-600">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                </div>
+                <h2 class="text-2xl font-black text-slate-800 tracking-tight mb-2 italic">Pretinhos Eurotrip</h2>
+                <input type="password" v-model="inputSenha" @keyup.enter="verificarSenha" placeholder="Senha" class="input-bento text-center mb-4 mt-6">
+                <button @click="verificarSenha" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold hover:bg-indigo-600 transition">Entrar</button>
+            </div>
+        </div>
+
+        <div v-else class="max-w-6xl mx-auto p-4 md:p-10">
+            
+            <header class="flex flex-col md:flex-row justify-between items-center gap-6 mb-12">
                 <div class="flex items-center gap-4 w-full md:w-auto">
                     <div class="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center text-indigo-600 border border-slate-100">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     </div>
                     <div>
                         <h1 class="text-2xl font-black tracking-tighter text-slate-800 italic">Pretinhos Eurotrip</h1>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Matheus & Davi • 2026</p>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">2026</p>
                     </div>
                 </div>
+                
                 <nav class="flex gap-1 overflow-x-auto no-scrollbar w-full md:w-auto pb-2 md:pb-0">
                     <a href="index.html" class="nav-pill">Home</a>
                     <a href="roteiro.html" class="nav-pill nav-active">Roteiro</a>
                     <a href="passagens.html" class="nav-pill">Vôos</a>
                     <a href="checklist.html" class="nav-pill">Checklist</a>
-                    <a href="ajustes.html" class="nav-pill"><svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg></a>
+                    <a href="ajustes.html" class="nav-pill">
+                        <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    </a>
                 </nav>
             </header>
-        </div>
 
-        <main class="max-w-6xl mx-auto p-4 md:p-10 pt-0">
-            
             <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
                 <div class="bg-white p-2 rounded-2xl shadow-sm border border-slate-100 flex gap-2 w-full md:w-auto">
-                    <button @click="view = 'simples'" :class="view === 'simples' ? 'tab-btn-active' : 'hover:bg-slate-50'" class="tab-btn w-full md:w-auto">Logística (Simples)</button>
-                    <button @click="view = 'detalhada'" :class="view === 'detalhada' ? 'tab-btn-active' : 'hover:bg-slate-50'" class="tab-btn w-full md:w-auto">Atrações (Detalhada)</button>
+                    <button @click="view = 'simples'" :class="view === 'simples' ? 'tab-btn-active' : 'hover:bg-slate-50'" class="tab-btn w-full md:w-auto">Logística</button>
+                    <button @click="view = 'detalhada'" :class="view === 'detalhada' ? 'tab-btn-active' : 'hover:bg-slate-50'" class="tab-btn w-full md:w-auto">Atrações</button>
                 </div>
                 <button v-if="view === 'simples'" @click="abrirModalSimples()" class="bg-indigo-600 text-white text-xs px-6 py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-indigo-700 transition shadow-lg shadow-indigo-200 flex items-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"/></svg> Adicionar Destino
@@ -92,7 +104,7 @@
             <div v-if="view === 'simples'" class="space-y-6">
                 <div v-if="roteiro.length === 0" class="bento-card text-center py-20 text-slate-400">
                     <svg class="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
-                    <p class="text-xs font-bold uppercase tracking-widest">Nenhum país/cidade adicionado na logística.</p>
+                    <p class="text-xs font-bold uppercase tracking-widest">Nenhum destino adicionado na logística.</p>
                 </div>
 
                 <div v-for="(item, idx) in roteiro" :key="item.id" class="bento-card relative timeline-line hover:border-indigo-100 transition">
@@ -133,7 +145,7 @@
                                     </span>
                                 </div>
                                 <div>
-                                    <span class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Hospedagem Aba</span>
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Status Hospedagem</span>
                                     <span :class="item.hospedagemOk ? 'text-emerald-600 bg-emerald-50 border-emerald-200' : 'text-amber-600 bg-amber-50 border-amber-200'" class="text-[10px] font-black uppercase px-2 py-1 rounded border inline-block">
                                         {{ item.hospedagemOk ? 'Confirmada' : 'Pendente' }}
                                     </span>
@@ -143,11 +155,11 @@
                             <div class="flex gap-4">
                                 <div class="flex items-center gap-2">
                                     <svg :class="item.visto ? 'text-amber-500' : 'text-emerald-500'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                    <span class="text-[10px] font-bold text-slate-500 uppercase">{{ item.visto ? 'Exige Visto/Autorização' : 'Sem exigência de visto' }}</span>
+                                    <span class="text-[10px] font-bold text-slate-500 uppercase">{{ item.visto ? 'Exige Visto/Autorização' : 'Sem exigência' }}</span>
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <svg :class="item.documentosOk ? 'text-emerald-500' : 'text-amber-500'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                    <span class="text-[10px] font-bold text-slate-500 uppercase">{{ item.documentosOk ? 'Documentos Prontos' : 'Documentos Pendentes' }}</span>
+                                    <span class="text-[10px] font-bold text-slate-500 uppercase">{{ item.documentosOk ? 'Documentos OK' : 'Documentos Pendentes' }}</span>
                                 </div>
                             </div>
                         </div>
@@ -166,7 +178,7 @@
 
                 <div v-if="passeiosFiltrados.length === 0" class="bento-card text-center py-20 text-slate-400">
                     <svg class="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg>
-                    <p class="text-xs font-bold uppercase tracking-widest">Nenhuma atração/passeio cadastrado.</p>
+                    <p class="text-xs font-bold uppercase tracking-widest">Nenhuma atração cadastrada.</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -182,14 +194,14 @@
                             <h3 class="text-lg font-black text-slate-800 uppercase tracking-tighter leading-tight">{{ pass.atracao }}</h3>
                             <p class="text-[10px] font-bold text-slate-400 uppercase mt-1 flex items-center gap-1">
                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg> 
-                                Bairro: {{ pass.bairro || 'Não informado' }}
+                                {{ pass.bairro || 'Não informado' }}
                             </p>
                         </div>
 
                         <div class="mt-6 space-y-4">
                             <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
                                 <div>
-                                    <span class="text-[9px] font-bold text-slate-400 uppercase block">Data Planejada</span>
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase block">Data</span>
                                     <span class="text-xs font-bold text-slate-700">{{ formatData(pass.data) || 'A definir' }}</span>
                                 </div>
                                 <div class="text-right">
@@ -199,7 +211,7 @@
                             </div>
                             
                             <div class="flex items-center justify-between gap-2">
-                                <a v-if="pass.link" :href="pass.link" target="_blank" class="flex-1 text-center bg-white border border-slate-200 text-slate-600 text-[10px] font-black uppercase py-2 rounded-xl hover:bg-slate-50 transition">Comprar Ingresso</a>
+                                <a v-if="pass.link" :href="pass.link" target="_blank" class="flex-1 text-center bg-white border border-slate-200 text-slate-600 text-[10px] font-black uppercase py-2 rounded-xl hover:bg-slate-50 transition">Link Oficial</a>
                                 <span v-else class="flex-1 text-center bg-slate-50 text-slate-400 border border-transparent text-[10px] font-black uppercase py-2 rounded-xl">Sem Link</span>
                                 
                                 <span :class="pass.ingressoComprado ? 'bg-emerald-500 text-white border-emerald-500' : 'bg-white border-slate-200 text-slate-400'" class="flex-1 text-center text-[10px] border font-black uppercase py-2 rounded-xl transition">
@@ -220,12 +232,12 @@
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">País / Cidade de Origem</label>
-                        <input v-model="formSimples.origem" type="text" placeholder="De onde estamos saindo?" class="input-bento">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">De onde saímos?</label>
+                        <input v-model="formSimples.origem" type="text" placeholder="Origem" class="input-bento">
                     </div>
                     <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">País / Cidade de Destino</label>
-                        <input v-model="formSimples.destino" type="text" placeholder="Para onde vamos?" class="input-bento">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Para onde vamos?</label>
+                        <input v-model="formSimples.destino" type="text" placeholder="Destino" class="input-bento">
                     </div>
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Data de Chegada</label>
@@ -237,23 +249,22 @@
                     </div>
                     <div class="md:col-span-2">
                         <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Como vamos chegar lá? (Transporte)</label>
-                        <input v-model="formSimples.transporte" type="text" placeholder="Ex: Trem Eurostar, Voo Ryanair..." class="input-bento">
-                        <p class="text-[9px] text-slate-400 mt-1 italic">* Os valores devem ser controlados na aba 'Transporte/Vôos'</p>
+                        <input v-model="formSimples.transporte" type="text" placeholder="Ex: Trem, Voo..." class="input-bento">
                     </div>
                 </div>
 
                 <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-4 mb-8">
                     <label class="flex items-center gap-3 cursor-pointer">
                         <input type="checkbox" v-model="formSimples.hospedagemOk" class="checkbox-bento">
-                        <span class="text-xs font-bold text-slate-700 uppercase">Hospedagem já garantida neste local?</span>
+                        <span class="text-xs font-bold text-slate-700 uppercase">Hospedagem já garantida?</span>
                     </label>
                     <label class="flex items-center gap-3 cursor-pointer">
                         <input type="checkbox" v-model="formSimples.visto" class="checkbox-bento">
-                        <span class="text-xs font-bold text-slate-700 uppercase">Destino exige Visto / Autorização (ETIAS)?</span>
+                        <span class="text-xs font-bold text-slate-700 uppercase">Exige Visto / Autorização?</span>
                     </label>
                     <label class="flex items-center gap-3 cursor-pointer">
                         <input type="checkbox" v-model="formSimples.documentosOk" class="checkbox-bento">
-                        <span class="text-xs font-bold text-slate-700 uppercase">Documentos para este país estão OK?</span>
+                        <span class="text-xs font-bold text-slate-700 uppercase">Documentos OK?</span>
                     </label>
                 </div>
 
@@ -264,11 +275,11 @@
         <div v-if="showModalDetalhado" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 overflow-y-auto">
             <div class="bento-card w-full max-w-2xl my-8 relative">
                 <button @click="showModalDetalhado = false" class="absolute top-6 right-6 text-slate-400 hover:text-slate-800"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
-                <h2 class="text-xl font-black text-slate-800 uppercase tracking-widest mb-6">{{ isEditingDetalhado ? 'Editar Atração' : 'Nova Atração / Passeio' }}</h2>
+                <h2 class="text-xl font-black text-slate-800 uppercase tracking-widest mb-6">{{ isEditingDetalhado ? 'Editar Atração' : 'Nova Atração' }}</h2>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     <div class="md:col-span-2">
-                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Nome da Atração / Local / Loja</label>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Nome da Atração</label>
                         <input v-model="formDetalhado.atracao" type="text" placeholder="Ex: Museu do Louvre" class="input-bento">
                     </div>
                     <div>
@@ -279,7 +290,7 @@
                         </select>
                     </div>
                     <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Data do Passeio</label>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Data</label>
                         <input v-model="formDetalhado.data" type="date" class="input-bento">
                     </div>
                     <div>
@@ -297,7 +308,7 @@
                         </div>
                     </div>
                     <div class="md:col-span-2">
-                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Link Oficial (Compra / Info)</label>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Link Oficial</label>
                         <input v-model="formDetalhado.link" type="url" placeholder="https://..." class="input-bento">
                     </div>
                 </div>
@@ -322,13 +333,13 @@
         createApp({
             data() {
                 return {
-                    autenticado: true, // Auto bypass temporário (remover em prod se quiser)
-                    view: 'simples', // 'simples' ou 'detalhada'
+                    autenticado: true,
+                    view: 'simples',
                     config: { orcamentoTotal: 0, cambio: 6.10, dataPartida: '', dataRetorno: '' },
-                    roteiro: [], // Roteiro Simples
-                    passeios: [], // Roteiro Detalhado
+                    roteiro: [],
+                    passeios: [],
+                    checklist: [], passagens: [], hospedagem: [], gastos: [],
                     
-                    // Modais e Forms
                     showModalSimples: false,
                     isEditingSimples: false,
                     formSimples: {},
@@ -342,7 +353,6 @@
             },
             computed: {
                 destinosUnicos() {
-                    // Pega o nome dos destinos do roteiro simples para usar no filtro e no select
                     return [...new Set(this.roteiro.map(r => r.destino).filter(Boolean))];
                 },
                 passeiosFiltrados() {
@@ -368,7 +378,6 @@
                         this.config.cambio = parseFloat(data.EURBRL.bid).toFixed(2);
                     } catch (e) {}
                 },
-                // --------- LÓGICA SIMPLES ---------
                 abrirModalSimples(item = null) {
                     if (item) {
                         this.isEditingSimples = true;
@@ -398,7 +407,6 @@
                         this.salvarStorage();
                     }
                 },
-                // --------- LÓGICA DETALHADA ---------
                 abrirModalDetalhado(item = null) {
                     if (item) {
                         this.isEditingDetalhado = true;
@@ -428,7 +436,12 @@
                         this.salvarStorage();
                     }
                 },
-                // --------- DADOS ---------
+                verificarSenha() {
+                    if (this.inputSenha === SENHA_MESTRE) {
+                        this.autenticado = true;
+                        localStorage.setItem('auth_euro_pro', 'true');
+                    }
+                },
                 salvarStorage() {
                     const saved = JSON.parse(localStorage.getItem('euro_data_master_v4') || '{}');
                     saved.roteiro = this.roteiro;
@@ -447,7 +460,7 @@
             },
             mounted() {
                 if (localStorage.getItem('auth_euro_pro') !== 'true') {
-                    window.location.href = 'index.html'; // Proteção de rota real
+                    window.location.href = 'index.html';
                 }
                 this.carregarStorage();
                 this.atualizarCambio();

@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pretinhos Eurotrip | Roteiro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f4f7fb; color: #0f172a; }
+        
+        .bento-card { 
+            background: white; border-radius: 32px; padding: 2rem;
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.04);
+            border: 1px solid rgba(255,255,255,0.8); transition: box-shadow 0.2s ease;
+        }
+
+        .nav-pill { 
+            font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; 
+            color: #64748b; padding: 10px 20px; border-radius: 100px; transition: all 0.2s; 
+        }
+        .nav-pill:hover { color: #0f172a; background: #e2e8f0; }
+        .nav-active { color: #4f46e5; background: #eef2ff; }
+
+        .tab-btn {
+            font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;
+            padding: 12px 24px; border-radius: 16px; color: #64748b; transition: all 0.2s;
+        }
+        .tab-btn-active { background-color: #0f172a; color: white; }
+
+        .input-bento {
+            background-color: #f8fafc; border: 1px solid transparent; border-radius: 16px;
+            padding: 14px 16px; font-weight: 600; color: #1e293b; width: 100%;
+            transition: all 0.2s; outline: none; font-size: 14px;
+        }
+        .input-bento:focus { background-color: #ffffff; border-color: #c7d2fe; box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); }
+        
+        .checkbox-bento { width: 24px; height: 24px; border-radius: 8px; cursor: pointer; accent-color: #4f46e5; }
+
+        /* Timeline line for Simple View */
+        .timeline-line::before {
+            content: ''; position: absolute; left: 23px; top: 60px; bottom: -20px;
+            width: 2px; background-color: #e2e8f0; z-index: 0;
+        }
+        .timeline-line:last-child::before { display: none; }
+
+        [v-cloak] { display: none; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="antialiased">
+    <div id="app" v-cloak>
+        
+        <div class="max-w-6xl mx-auto p-4 md:p-10 pb-0">
+            <header class="flex flex-col md:flex-row justify-between items-center gap-6 mb-10">
+                <div class="flex items-center gap-4 w-full md:w-auto">
+                    <div class="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center text-indigo-600 border border-slate-100">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-black tracking-tighter text-slate-800 italic">Pretinhos Eurotrip</h1>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Matheus & Davi • 2026</p>
+                    </div>
+                </div>
+                <nav class="flex gap-1 overflow-x-auto no-scrollbar w-full md:w-auto pb-2 md:pb-0">
+                    <a href="index.html" class="nav-pill">Home</a>
+                    <a href="roteiro.html" class="nav-pill nav-active">Roteiro</a>
+                    <a href="passagens.html" class="nav-pill">Vôos</a>
+                    <a href="checklist.html" class="nav-pill">Checklist</a>
+                    <a href="ajustes.html" class="nav-pill"><svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg></a>
+                </nav>
+            </header>
+        </div>
+
+        <main class="max-w-6xl mx-auto p-4 md:p-10 pt-0">
+            
+            <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
+                <div class="bg-white p-2 rounded-2xl shadow-sm border border-slate-100 flex gap-2 w-full md:w-auto">
+                    <button @click="view = 'simples'" :class="view === 'simples' ? 'tab-btn-active' : 'hover:bg-slate-50'" class="tab-btn w-full md:w-auto">Logística (Simples)</button>
+                    <button @click="view = 'detalhada'" :class="view === 'detalhada' ? 'tab-btn-active' : 'hover:bg-slate-50'" class="tab-btn w-full md:w-auto">Atrações (Detalhada)</button>
+                </div>
+                <button v-if="view === 'simples'" @click="abrirModalSimples()" class="bg-indigo-600 text-white text-xs px-6 py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-indigo-700 transition shadow-lg shadow-indigo-200 flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"/></svg> Adicionar Destino
+                </button>
+                <button v-if="view === 'detalhada'" @click="abrirModalDetalhado()" class="bg-indigo-600 text-white text-xs px-6 py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-indigo-700 transition shadow-lg shadow-indigo-200 flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"/></svg> Adicionar Atração
+                </button>
+            </div>
+
+            <div v-if="view === 'simples'" class="space-y-6">
+                <div v-if="roteiro.length === 0" class="bento-card text-center py-20 text-slate-400">
+                    <svg class="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+                    <p class="text-xs font-bold uppercase tracking-widest">Nenhum país/cidade adicionado na logística.</p>
+                </div>
+
+                <div v-for="(item, idx) in roteiro" :key="item.id" class="bento-card relative timeline-line hover:border-indigo-100 transition">
+                    <div class="flex items-start gap-6 relative z-10">
+                        <div class="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center text-white font-black shrink-0 shadow-lg">
+                            {{ String(idx + 1).padStart(2, '0') }}
+                        </div>
+                        <div class="flex-grow space-y-4">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-2">
+                                        {{ item.origem || 'Início' }} 
+                                        <svg class="w-3 h-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg> 
+                                        {{ item.destino }}
+                                    </p>
+                                    <h3 class="text-xl font-black text-slate-800 uppercase tracking-tighter">{{ item.destino }}</h3>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button @click="abrirModalSimples(item)" class="p-2 text-slate-400 hover:text-indigo-600 bg-slate-50 hover:bg-indigo-50 rounded-xl transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg></button>
+                                    <button @click="deletarSimples(item.id)" class="p-2 text-slate-400 hover:text-red-600 bg-slate-50 hover:bg-red-50 rounded-xl transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                                <div>
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Datas</span>
+                                    <span class="text-sm font-bold text-slate-700">{{ formatData(item.dataChegada) }} a {{ formatData(item.dataSaida) }}</span>
+                                </div>
+                                <div>
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Permanência</span>
+                                    <span class="text-sm font-bold text-slate-700">{{ calcularDias(item.dataChegada, item.dataSaida) }} dias</span>
+                                </div>
+                                <div>
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Chegada Via</span>
+                                    <span class="text-sm font-bold text-indigo-600 flex items-center gap-1">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                                        {{ item.transporte || 'A definir' }}
+                                    </span>
+                                </div>
+                                <div>
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Hospedagem Aba</span>
+                                    <span :class="item.hospedagemOk ? 'text-emerald-600 bg-emerald-50 border-emerald-200' : 'text-amber-600 bg-amber-50 border-amber-200'" class="text-[10px] font-black uppercase px-2 py-1 rounded border inline-block">
+                                        {{ item.hospedagemOk ? 'Confirmada' : 'Pendente' }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-4">
+                                <div class="flex items-center gap-2">
+                                    <svg :class="item.visto ? 'text-amber-500' : 'text-emerald-500'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    <span class="text-[10px] font-bold text-slate-500 uppercase">{{ item.visto ? 'Exige Visto/Autorização' : 'Sem exigência de visto' }}</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <svg :class="item.documentosOk ? 'text-emerald-500' : 'text-amber-500'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    <span class="text-[10px] font-bold text-slate-500 uppercase">{{ item.documentosOk ? 'Documentos Prontos' : 'Documentos Pendentes' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div v-if="view === 'detalhada'" class="space-y-6">
+                <div class="bento-card !py-4 flex items-center justify-between">
+                    <span class="text-xs font-black uppercase text-slate-400 tracking-widest">Filtro Rápido</span>
+                    <select v-model="filtroDestino" class="input-bento !w-auto !py-2 !bg-white">
+                        <option value="">Todos os Destinos</option>
+                        <option v-for="dest in destinosUnicos" :key="dest" :value="dest">{{ dest }}</option>
+                    </select>
+                </div>
+
+                <div v-if="passeiosFiltrados.length === 0" class="bento-card text-center py-20 text-slate-400">
+                    <svg class="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg>
+                    <p class="text-xs font-bold uppercase tracking-widest">Nenhuma atração/passeio cadastrado.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div v-for="pass in passeiosFiltrados" :key="pass.id" class="bento-card !p-6 flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-4">
+                                <span class="bg-indigo-50 text-indigo-600 text-[9px] font-black uppercase px-2 py-1 rounded tracking-widest">{{ pass.destino }}</span>
+                                <div class="flex gap-1">
+                                    <button @click="abrirModalDetalhado(pass)" class="text-slate-300 hover:text-indigo-600 transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg></button>
+                                    <button @click="deletarDetalhado(pass.id)" class="text-slate-300 hover:text-red-600 transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                                </div>
+                            </div>
+                            <h3 class="text-lg font-black text-slate-800 uppercase tracking-tighter leading-tight">{{ pass.atracao }}</h3>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase mt-1 flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg> 
+                                Bairro: {{ pass.bairro || 'Não informado' }}
+                            </p>
+                        </div>
+
+                        <div class="mt-6 space-y-4">
+                            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
+                                <div>
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase block">Data Planejada</span>
+                                    <span class="text-xs font-bold text-slate-700">{{ formatData(pass.data) || 'A definir' }}</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase block">Valor (€)</span>
+                                    <span class="text-xs font-black text-indigo-600">€ {{ pass.valorEur }} <span class="text-slate-400 font-medium">≈ R$ {{(pass.valorEur * config.cambio).toFixed(2)}}</span></span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between gap-2">
+                                <a v-if="pass.link" :href="pass.link" target="_blank" class="flex-1 text-center bg-white border border-slate-200 text-slate-600 text-[10px] font-black uppercase py-2 rounded-xl hover:bg-slate-50 transition">Comprar Ingresso</a>
+                                <span v-else class="flex-1 text-center bg-slate-50 text-slate-400 border border-transparent text-[10px] font-black uppercase py-2 rounded-xl">Sem Link</span>
+                                
+                                <span :class="pass.ingressoComprado ? 'bg-emerald-500 text-white border-emerald-500' : 'bg-white border-slate-200 text-slate-400'" class="flex-1 text-center text-[10px] border font-black uppercase py-2 rounded-xl transition">
+                                    {{ pass.ingressoComprado ? 'Ingresso OK' : 'Pendente' }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <div v-if="showModalSimples" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 overflow-y-auto">
+            <div class="bento-card w-full max-w-2xl my-8 relative">
+                <button @click="showModalSimples = false" class="absolute top-6 right-6 text-slate-400 hover:text-slate-800"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+                <h2 class="text-xl font-black text-slate-800 uppercase tracking-widest mb-6">{{ isEditingSimples ? 'Editar Destino' : 'Nova Parada Logística' }}</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">País / Cidade de Origem</label>
+                        <input v-model="formSimples.origem" type="text" placeholder="De onde estamos saindo?" class="input-bento">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">País / Cidade de Destino</label>
+                        <input v-model="formSimples.destino" type="text" placeholder="Para onde vamos?" class="input-bento">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Data de Chegada</label>
+                        <input v-model="formSimples.dataChegada" type="date" class="input-bento">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Data de Saída</label>
+                        <input v-model="formSimples.dataSaida" type="date" class="input-bento">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Como vamos chegar lá? (Transporte)</label>
+                        <input v-model="formSimples.transporte" type="text" placeholder="Ex: Trem Eurostar, Voo Ryanair..." class="input-bento">
+                        <p class="text-[9px] text-slate-400 mt-1 italic">* Os valores devem ser controlados na aba 'Transporte/Vôos'</p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-4 mb-8">
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" v-model="formSimples.hospedagemOk" class="checkbox-bento">
+                        <span class="text-xs font-bold text-slate-700 uppercase">Hospedagem já garantida neste local?</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" v-model="formSimples.visto" class="checkbox-bento">
+                        <span class="text-xs font-bold text-slate-700 uppercase">Destino exige Visto / Autorização (ETIAS)?</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" v-model="formSimples.documentosOk" class="checkbox-bento">
+                        <span class="text-xs font-bold text-slate-700 uppercase">Documentos para este país estão OK?</span>
+                    </label>
+                </div>
+
+                <button @click="salvarSimples" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-indigo-600 transition">Salvar Logística</button>
+            </div>
+        </div>
+
+        <div v-if="showModalDetalhado" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 overflow-y-auto">
+            <div class="bento-card w-full max-w-2xl my-8 relative">
+                <button @click="showModalDetalhado = false" class="absolute top-6 right-6 text-slate-400 hover:text-slate-800"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+                <h2 class="text-xl font-black text-slate-800 uppercase tracking-widest mb-6">{{ isEditingDetalhado ? 'Editar Atração' : 'Nova Atração / Passeio' }}</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div class="md:col-span-2">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Nome da Atração / Local / Loja</label>
+                        <input v-model="formDetalhado.atracao" type="text" placeholder="Ex: Museu do Louvre" class="input-bento">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Destino / País (Filtro)</label>
+                        <select v-model="formDetalhado.destino" class="input-bento">
+                            <option value="">Selecione...</option>
+                            <option v-for="dest in destinosUnicos" :key="dest" :value="dest">{{ dest }}</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Data do Passeio</label>
+                        <input v-model="formDetalhado.data" type="date" class="input-bento">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Bairro / Região</label>
+                        <input v-model="formDetalhado.bairro" type="text" placeholder="Ex: Montmartre" class="input-bento">
+                    </div>
+                    <div>
+                        <div class="flex justify-between">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Valor (Euro)</label>
+                            <span class="text-[10px] font-black text-indigo-500">≈ R$ {{ (formDetalhado.valorEur * config.cambio).toFixed(2) }}</span>
+                        </div>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 font-black text-slate-400">€</span>
+                            <input v-model.number="formDetalhado.valorEur" type="number" step="0.01" class="input-bento pl-8" placeholder="0.00">
+                        </div>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Link Oficial (Compra / Info)</label>
+                        <input v-model="formDetalhado.link" type="url" placeholder="https://..." class="input-bento">
+                    </div>
+                </div>
+
+                <div class="bg-indigo-50 p-4 rounded-2xl border border-indigo-100 mb-8">
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" v-model="formDetalhado.ingressoComprado" class="checkbox-bento">
+                        <span class="text-xs font-black text-indigo-900 uppercase">Ingresso já comprado / Reservado?</span>
+                    </label>
+                </div>
+
+                <button @click="salvarDetalhado" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-indigo-600 transition">Salvar Atração</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const { createApp } = Vue
+        const SENHA_MESTRE = 'europa2026';
+
+        createApp({
+            data() {
+                return {
+                    autenticado: true, // Auto bypass temporário (remover em prod se quiser)
+                    view: 'simples', // 'simples' ou 'detalhada'
+                    config: { orcamentoTotal: 0, cambio: 6.10, dataPartida: '', dataRetorno: '' },
+                    roteiro: [], // Roteiro Simples
+                    passeios: [], // Roteiro Detalhado
+                    
+                    // Modais e Forms
+                    showModalSimples: false,
+                    isEditingSimples: false,
+                    formSimples: {},
+                    
+                    showModalDetalhado: false,
+                    isEditingDetalhado: false,
+                    formDetalhado: {},
+                    
+                    filtroDestino: ''
+                }
+            },
+            computed: {
+                destinosUnicos() {
+                    // Pega o nome dos destinos do roteiro simples para usar no filtro e no select
+                    return [...new Set(this.roteiro.map(r => r.destino).filter(Boolean))];
+                },
+                passeiosFiltrados() {
+                    if (!this.filtroDestino) return this.passeios;
+                    return this.passeios.filter(p => p.destino === this.filtroDestino);
+                }
+            },
+            methods: {
+                formatData(d) {
+                    if (!d) return '--/--/----';
+                    const parts = d.split('-');
+                    return `${parts[2]}/${parts[1]}/${parts[0]}`;
+                },
+                calcularDias(inicio, fim) {
+                    if (!inicio || !fim) return 0;
+                    const diff = new Date(fim) - new Date(inicio);
+                    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+                },
+                async atualizarCambio() {
+                    try {
+                        const res = await fetch('https://economia.awesomeapi.com.br/last/EUR-BRL');
+                        const data = await res.json();
+                        this.config.cambio = parseFloat(data.EURBRL.bid).toFixed(2);
+                    } catch (e) {}
+                },
+                // --------- LÓGICA SIMPLES ---------
+                abrirModalSimples(item = null) {
+                    if (item) {
+                        this.isEditingSimples = true;
+                        this.formSimples = { ...item };
+                    } else {
+                        this.isEditingSimples = false;
+                        this.formSimples = {
+                            id: Date.now(), origem: '', destino: '', dataChegada: '', dataSaida: '',
+                            transporte: '', hospedagemOk: false, visto: false, documentosOk: false
+                        };
+                    }
+                    this.showModalSimples = true;
+                },
+                salvarSimples() {
+                    if (this.isEditingSimples) {
+                        const index = this.roteiro.findIndex(r => r.id === this.formSimples.id);
+                        if (index !== -1) this.roteiro[index] = { ...this.formSimples };
+                    } else {
+                        this.roteiro.push({ ...this.formSimples });
+                    }
+                    this.salvarStorage();
+                    this.showModalSimples = false;
+                },
+                deletarSimples(id) {
+                    if(confirm('Remover esta parada?')) {
+                        this.roteiro = this.roteiro.filter(r => r.id !== id);
+                        this.salvarStorage();
+                    }
+                },
+                // --------- LÓGICA DETALHADA ---------
+                abrirModalDetalhado(item = null) {
+                    if (item) {
+                        this.isEditingDetalhado = true;
+                        this.formDetalhado = { ...item };
+                    } else {
+                        this.isEditingDetalhado = false;
+                        this.formDetalhado = {
+                            id: Date.now(), atracao: '', destino: '', data: '', 
+                            bairro: '', valorEur: 0, link: '', ingressoComprado: false
+                        };
+                    }
+                    this.showModalDetalhado = true;
+                },
+                salvarDetalhado() {
+                    if (this.isEditingDetalhado) {
+                        const index = this.passeios.findIndex(p => p.id === this.formDetalhado.id);
+                        if (index !== -1) this.passeios[index] = { ...this.formDetalhado };
+                    } else {
+                        this.passeios.push({ ...this.formDetalhado });
+                    }
+                    this.salvarStorage();
+                    this.showModalDetalhado = false;
+                },
+                deletarDetalhado(id) {
+                    if(confirm('Remover esta atração?')) {
+                        this.passeios = this.passeios.filter(p => p.id !== id);
+                        this.salvarStorage();
+                    }
+                },
+                // --------- DADOS ---------
+                salvarStorage() {
+                    const saved = JSON.parse(localStorage.getItem('euro_data_master_v4') || '{}');
+                    saved.roteiro = this.roteiro;
+                    saved.passeios = this.passeios;
+                    localStorage.setItem('euro_data_master_v4', JSON.stringify(saved));
+                },
+                carregarStorage() {
+                    const saved = localStorage.getItem('euro_data_master_v4');
+                    if (saved) {
+                        const parsed = JSON.parse(saved);
+                        if (parsed.config) this.config = parsed.config;
+                        this.roteiro = parsed.roteiro || [];
+                        this.passeios = parsed.passeios || [];
+                    }
+                }
+            },
+            mounted() {
+                if (localStorage.getItem('auth_euro_pro') !== 'true') {
+                    window.location.href = 'index.html'; // Proteção de rota real
+                }
+                this.carregarStorage();
+                this.atualizarCambio();
+            }
+        }).mount('#app')
+    </script>
+</body>
+</html>

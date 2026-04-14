@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pretinhos Eurotrip | Checklist</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f4f7fb; color: #0f172a; }
+        .bento-card { background: white; border-radius: 28px; padding: 1.5rem; box-shadow: 0 10px 40px -10px rgba(0,0,0,0.04); border: 1px solid rgba(255,255,255,0.8); }
+        .nav-pill { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; padding: 10px 16px; border-radius: 100px; transition: all 0.2s; white-space: nowrap; }
+        .nav-active { color: #4f46e5 !important; background: #eef2ff !important; }
+        .input-bento { background-color: #f8fafc; border: 1px solid transparent; border-radius: 16px; padding: 14px 16px; font-weight: 600; color: #1e293b; width: 100%; outline: none; }
+        .visual-selector { border: 2px solid transparent; background: #f8fafc; border-radius: 16px; padding: 10px; cursor: pointer; transition: all 0.2s; text-align: center; }
+        .visual-selector.selected { border-color: #4f46e5; background: #eef2ff; color: #4f46e5; }
+        .status-done { opacity: 0.5; filter: grayscale(1); }
+        .filter-pill { font-size: 9px; font-weight: 800; text-transform: uppercase; padding: 6px 14px; border-radius: 100px; cursor: pointer; transition: all 0.2s; border: 1.5px solid transparent; color: #64748b; background: white; }
+        .filter-pill.active { background: #0f172a; color: white; border-color: #0f172a; }
+        [v-cloak] { display: none; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="antialiased">
+    <div id="app" v-cloak>
+        <div class="max-w-6xl mx-auto p-4 md:p-8">
+            <header class="flex flex-col md:flex-row justify-between items-center gap-6 mb-10">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-indigo-600 border border-slate-100 shrink-0">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                    <h1 class="text-xl md:text-2xl font-black tracking-tighter italic text-indigo-600">Checklist</h1>
+                </div>
+                <nav class="flex gap-1 overflow-x-auto no-scrollbar w-full md:w-auto">
+                    <a href="index.html" class="nav-pill">Home</a>
+                    <a href="roteiro.html" class="nav-pill">Roteiro</a>
+                    <a href="transporte.html" class="nav-pill">Transporte</a>
+                    <a href="hospedagem.html" class="nav-pill">Hospedagem</a>
+                    <a href="checklist.html" class="nav-pill nav-active">Checklist</a>
+                    <a href="gastos.html" class="nav-pill">Gastos</a>
+                </nav>
+            </header>
+
+            <!-- PROGRESSO -->
+            <div class="bento-card mb-6">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Progresso Geral</span>
+                    <span class="text-[10px] font-black text-indigo-600">{{ tarefasConcluidas }} / {{ checklist.length }}</span>
+                </div>
+                <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+                    <div class="bg-indigo-600 h-full transition-all duration-700" :style="{ width: percentualChecklist + '%' }"></div>
+                </div>
+                <div class="flex gap-4 mt-3">
+                    <span class="text-[9px] font-black text-emerald-600">{{ tarefasConcluidas }} concluídas</span>
+                    <span class="text-[9px] font-black text-amber-600">{{ checklist.filter(t => t.status === 'Em Andamento').length }} em andamento</span>
+                    <span class="text-[9px] font-black text-slate-400">{{ checklist.filter(t => t.status === 'Pendente').length }} pendentes</span>
+                </div>
+            </div>
+
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                <div class="flex flex-wrap gap-2">
+                    <button v-for="f in filtros" :key="f" @click="filtroAtivo = f" :class="filtroAtivo === f ? 'active' : ''" class="filter-pill">{{ f }}</button>
+                </div>
+                <button @click="abrirModal()" class="bg-indigo-600 text-white text-xs px-8 py-4 rounded-2xl font-black uppercase shadow-xl shrink-0">+ Nova Tarefa</button>
+            </div>
+
+            <div class="grid grid-cols-1 gap-4">
+                <div v-for="t in tarefasOrdenadas" :key="t.id" class="bento-card !p-4 flex items-center gap-4 transition-all" :class="{'status-done': t.status === 'Concluído'}">
+                    <div @click="toggleStatus(t)" class="w-12 h-12 rounded-xl flex items-center justify-center cursor-pointer transition-colors shrink-0" :class="t.status === 'Concluído' ? 'bg-emerald-500 text-white' : t.status === 'Em Andamento' ? 'bg-amber-100 text-amber-500' : 'bg-slate-100 text-slate-300 hover:text-indigo-500'">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                    
+                    <div class="flex-grow min-w-0 cursor-pointer" @click="abrirModal(t)">
+                        <div class="flex items-center gap-2 mb-1 flex-wrap">
+                            <span class="text-[8px] font-black uppercase px-2 py-1 rounded bg-slate-100 text-slate-500">{{ t.categoria }}</span>
+                            <span class="text-[8px] font-black uppercase px-2 py-1 rounded" :class="getPrioridadeClass(t)">{{ getPrioridadeTexto(t) }}</span>
+                            <span v-if="t.status === 'Em Andamento'" class="text-[8px] font-black uppercase px-2 py-1 rounded bg-amber-50 text-amber-600">Em Andamento</span>
+                        </div>
+                        <h3 class="text-sm md:text-base font-black text-slate-800 truncate" :class="{'line-through text-slate-400': t.status === 'Concluído'}">{{ t.nome }}</h3>
+                        <p class="text-[9px] font-bold text-slate-400 uppercase mt-1">
+                            Responsável: {{ t.responsavel }}
+                            <span v-if="t.dataLimite" class="ml-2">• Até {{ formatarData(t.dataLimite) }}</span>
+                        </p>
+                    </div>
+
+                    <button @click="deletar(t.id)" class="p-3 text-slate-200 hover:text-red-500 transition rounded-xl bg-slate-50 shrink-0">✕</button>
+                </div>
+                <div v-if="!tarefasOrdenadas.length" class="bento-card text-center py-16 text-slate-400">
+                    <p class="font-black uppercase text-sm">Nenhuma tarefa {{ filtroAtivo !== 'Todos' ? 'neste filtro' : 'cadastrada' }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL -->
+        <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+            <div class="bento-card w-full max-w-2xl flex flex-col max-h-[90vh]">
+                <div class="flex justify-between items-center mb-6 shrink-0">
+                    <h2 class="text-xl font-black text-slate-800 uppercase tracking-widest">Tarefa</h2>
+                    <button @click="showModal = false" class="p-2 bg-slate-100 rounded-full">✕</button>
+                </div>
+
+                <div class="overflow-y-auto pr-2 space-y-6 flex-grow no-scrollbar">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">O que precisa ser feito?</label>
+                        <input v-model="form.nome" type="text" placeholder="Ex: Tirar passaporte" class="input-bento">
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Categoria</label>
+                            <select v-model="form.categoria" class="input-bento">
+                                <option>Documentos</option>
+                                <option>Finanças</option>
+                                <option>Planejamento</option>
+                                <option>Malas</option>
+                                <option>Saúde</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Data Limite</label>
+                            <input v-model="form.dataLimite" type="date" class="input-bento">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">Responsável</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div v-for="r in ['Matheus', 'Tiago', 'Ambos']" @click="form.responsavel = r" :class="form.responsavel === r ? 'selected' : ''" class="visual-selector font-black text-[10px] uppercase">{{ r }}</div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-900 p-6 rounded-3xl">
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-2">Prioridade</label>
+                            <select v-model="form.prioridade" class="input-bento">
+                                <option value="Baixa">Baixa</option>
+                                <option value="Média">Média</option>
+                                <option value="Alta">Alta</option>
+                                <option value="Urgente">Urgente</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-2">Status</label>
+                            <select v-model="form.status" class="input-bento">
+                                <option>Pendente</option>
+                                <option>Em Andamento</option>
+                                <option>Concluído</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-6 border-t mt-4 shrink-0">
+                    <button @click="salvar" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-indigo-600 transition">Salvar Tarefa</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+        createApp({
+            data() {
+                return {
+                    checklist: [],
+                    showModal: false,
+                    isEditing: false,
+                    form: {},
+                    filtroAtivo: 'Todos',
+                    filtros: ['Todos', 'Pendente', 'Em Andamento', 'Concluído', 'Urgente']
+                }
+            },
+            computed: {
+                tarefasConcluidas() { return this.checklist.filter(t => t.status === 'Concluído').length; },
+                percentualChecklist() {
+                    if (!this.checklist.length) return 0;
+                    return Math.round((this.tarefasConcluidas / this.checklist.length) * 100);
+                },
+                tarefasOrdenadas() {
+                    const pesos = { 'Urgente': 4, 'Alta': 3, 'Média': 2, 'Baixa': 1 };
+                    let lista = [...this.checklist];
+
+                    if (this.filtroAtivo === 'Urgente') {
+                        lista = lista.filter(t => this.getPrioridadeTexto(t) === 'Urgente' && t.status !== 'Concluído');
+                    } else if (this.filtroAtivo !== 'Todos') {
+                        lista = lista.filter(t => t.status === this.filtroAtivo);
+                    }
+
+                    return lista.sort((a, b) => {
+                        if (a.status === 'Concluído' && b.status !== 'Concluído') return 1;
+                        if (a.status !== 'Concluído' && b.status === 'Concluído') return -1;
+                        return (pesos[this.getPrioridadeTexto(b)] || 0) - (pesos[this.getPrioridadeTexto(a)] || 0);
+                    });
+                }
+            },
+            methods: {
+                getPrioridadeTexto(t) {
+                    if (t.status === 'Concluído') return t.prioridade;
+                    if (!t.dataLimite) return t.prioridade;
+                    const hoje = new Date();
+                    const limite = new Date(t.dataLimite);
+                    const diffDays = Math.ceil((limite - hoje) / 86400000);
+                    if (diffDays <= 3) return 'Urgente';
+                    if (diffDays <= 7) return 'Alta';
+                    return t.prioridade;
+                },
+                getPrioridadeClass(t) {
+                    const p = this.getPrioridadeTexto(t);
+                    if (p === 'Urgente') return 'bg-red-50 text-red-500';
+                    if (p === 'Alta') return 'bg-amber-50 text-amber-600';
+                    if (p === 'Média') return 'bg-indigo-50 text-indigo-500';
+                    return 'bg-slate-100 text-slate-500';
+                },
+                formatarData(d) {
+                    if (!d) return '';
+                    const p = d.split('-');
+                    return `${p[2]}/${p[1]}`;
+                },
+                toggleStatus(t) {
+                    if (t.status === 'Concluído') t.status = 'Pendente';
+                    else if (t.status === 'Pendente') t.status = 'Em Andamento';
+                    else t.status = 'Concluído';
+                    this.salvarStorage();
+                },
+                abrirModal(item = null) {
+                    if (item) {
+                        this.isEditing = true;
+                        this.form = { ...item };
+                    } else {
+                        this.isEditing = false;
+                        this.form = { id: Date.now(), nome: '', categoria: 'Planejamento', status: 'Pendente', prioridade: 'Média', dataLimite: '', responsavel: 'Ambos' };
+                    }
+                    this.showModal = true;
+                },
+                salvar() {
+                    if (this.isEditing) {
+                        const idx = this.checklist.findIndex(x => x.id === this.form.id);
+                        if (idx >= 0) this.checklist[idx] = { ...this.form };
+                    } else {
+                        this.checklist.push({ ...this.form });
+                    }
+                    this.salvarStorage();
+                    this.showModal = false;
+                },
+                deletar(id) {
+                    if (confirm('Apagar esta tarefa?')) {
+                        this.checklist = this.checklist.filter(x => x.id !== id);
+                        this.salvarStorage();
+                    }
+                },
+                salvarStorage() {
+                    const s = JSON.parse(localStorage.getItem('euro_data_master_v4') || '{}');
+                    s.checklist = this.checklist;
+                    localStorage.setItem('euro_data_master_v4', JSON.stringify(s));
+                },
+                carregar() {
+                    const s = localStorage.getItem('euro_data_master_v4');
+                    if (s) {
+                        const p = JSON.parse(s);
+                        this.checklist = p.checklist || [];
+                    }
+                }
+            },
+            mounted() { this.carregar(); }
+        }).mount('#app');
+    </script>
+</body>
+</html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pretinhos Eurotrip | Hospedagem</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f4f7fb; color: #0f172a; }
+        .bento-card { background: white; border-radius: 28px; padding: 1.5rem; box-shadow: 0 10px 40px -10px rgba(0,0,0,0.04); border: 1px solid rgba(255,255,255,0.8); }
+        .nav-pill { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; padding: 10px 16px; border-radius: 100px; transition: all 0.2s; white-space: nowrap; }
+        .nav-active { color: #4f46e5 !important; background: #eef2ff !important; }
+        .input-bento { background-color: #f8fafc; border: 1px solid transparent; border-radius: 16px; padding: 14px 16px; font-weight: 600; color: #1e293b; width: 100%; outline: none; }
+        .visual-selector { border: 2px solid transparent; background: #f8fafc; border-radius: 16px; padding: 12px; cursor: pointer; transition: all 0.2s; text-align: center; font-size: 10px; font-weight: 800; text-transform: uppercase; color: #64748b; }
+        .visual-selector.selected { border-color: #4f46e5; background: #eef2ff; color: #4f46e5; }
+        [v-cloak] { display: none; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="antialiased">
+    <div id="app" v-cloak>
+        <div class="max-w-6xl mx-auto p-4 md:p-8">
+            <header class="flex flex-col md:flex-row justify-between items-center gap-6 mb-10">
+                <h1 class="text-xl md:text-2xl font-black italic text-indigo-600">Hospedagem</h1>
+                <nav class="flex gap-1 overflow-x-auto no-scrollbar w-full md:w-auto">
+                    <a href="index.html" class="nav-pill">Home</a>
+                    <a href="roteiro.html" class="nav-pill">Roteiro</a>
+                    <a href="transporte.html" class="nav-pill">Transporte</a>
+                    <a href="hospedagem.html" class="nav-pill nav-active">Hospedagem</a>
+                    <a href="checklist.html" class="nav-pill">Checklist</a>
+                    <a href="gastos.html" class="nav-pill">Gastos</a>
+                </nav>
+            </header>
+
+            <!-- RESUMO -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <div class="bento-card !py-4 !px-6 bg-indigo-600 text-white">
+                    <p class="text-[8px] uppercase font-black opacity-60">Total Hospedagem</p>
+                    <p class="font-black text-xl">R$ {{ totalGeral.toLocaleString('pt-BR') }}</p>
+                </div>
+                <div class="bento-card !py-4 !px-6">
+                    <p class="text-[8px] uppercase font-black text-slate-400">Confirmadas</p>
+                    <p class="font-black text-xl text-emerald-600">{{ hospedagem.filter(h => h.status === 'Confirmado').length }} / {{ hospedagem.length }}</p>
+                </div>
+                <div class="bento-card !py-4 !px-6">
+                    <p class="text-[8px] uppercase font-black text-slate-400">Total de noites</p>
+                    <p class="font-black text-xl">{{ totalNoites }}</p>
+                </div>
+            </div>
+
+            <button @click="abrirModal()" class="bg-indigo-600 text-white text-xs px-8 py-4 rounded-2xl font-black uppercase mb-8">+ Nova Estadia</button>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div v-for="h in hospedagemOrdenada" :key="h.id" class="bento-card flex flex-col justify-between" :class="h.status === 'Confirmado' ? 'border-l-4 border-emerald-500' : 'opacity-80'">
+                    <div>
+                        <div class="flex justify-between mb-4">
+                            <span class="text-[9px] font-black uppercase px-2 py-1 rounded bg-slate-100 text-slate-500">{{ h.tipo }}</span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[9px] font-black uppercase px-2 py-1 rounded" :class="h.status === 'Confirmado' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'">{{ h.status }}</span>
+                                <button @click="deletar(h.id)" class="text-slate-200 hover:text-red-500 transition text-xs">✕</button>
+                            </div>
+                        </div>
+                        <h3 class="text-lg font-black uppercase tracking-tighter">{{ h.nome }}</h3>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase mt-1">{{ h.bairro }} • {{ h.destino }}</p>
+                        <div class="flex items-center gap-2 mt-2">
+                            <span v-if="h.seguranca" class="text-[8px] font-black uppercase px-2 py-1 rounded"
+                                :class="{
+                                    'bg-emerald-50 text-emerald-700': h.seguranca === 'Tranquilo',
+                                    'bg-amber-50 text-amber-700': h.seguranca === 'Médio',
+                                    'bg-red-50 text-red-700': h.seguranca === 'Perigoso'
+                                }">
+                                {{ h.seguranca === 'Tranquilo' ? '🟢' : h.seguranca === 'Médio' ? '🟡' : '🔴' }} {{ h.seguranca }}
+                            </span>
+                        </div>
+                        <div v-if="h.checkIn || h.checkOut" class="mt-3 flex gap-3">
+                            <div v-if="h.checkIn" class="bg-slate-50 rounded-xl px-3 py-2">
+                                <p class="text-[8px] font-black text-slate-400 uppercase">Check-in</p>
+                                <p class="text-xs font-black">{{ formatData(h.checkIn) }}</p>
+                            </div>
+                            <div v-if="h.checkOut" class="bg-slate-50 rounded-xl px-3 py-2">
+                                <p class="text-[8px] font-black text-slate-400 uppercase">Check-out</p>
+                                <p class="text-xs font-black">{{ formatData(h.checkOut) }}</p>
+                            </div>
+                            <div v-if="calcNoites(h)" class="bg-indigo-50 rounded-xl px-3 py-2">
+                                <p class="text-[8px] font-black text-indigo-400 uppercase">Noites</p>
+                                <p class="text-xs font-black text-indigo-600">{{ calcNoites(h) }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex justify-between items-end border-t pt-4">
+                        <div>
+                            <p class="text-[9px] font-bold text-slate-400 uppercase">Valor Total</p>
+                            <p class="text-lg font-black">R$ {{ Number(h.valorBrl).toLocaleString('pt-BR') }}</p>
+                        </div>
+                        <button @click="abrirModal(h)" class="text-[10px] font-black uppercase text-indigo-600">Editar</button>
+                    </div>
+                </div>
+                <div v-if="!hospedagem.length" class="bento-card text-center py-16 text-slate-400 lg:col-span-3">
+                    <p class="font-black uppercase text-sm">Nenhuma hospedagem cadastrada</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL -->
+        <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+            <div class="bento-card w-full max-w-3xl flex flex-col max-h-[90vh]">
+                <div class="flex justify-between items-center mb-6 shrink-0">
+                    <h2 class="text-xl font-black text-slate-800 uppercase tracking-widest">Hospedagem</h2>
+                    <button @click="showModal = false" class="p-2 bg-slate-100 rounded-full">✕</button>
+                </div>
+                
+                <div class="overflow-y-auto pr-2 space-y-4 flex-grow no-scrollbar">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase block mb-2">Tipo</label>
+                        <div class="grid grid-cols-4 gap-2">
+                            <div v-for="t in ['Hotel', 'Hostel', 'Airbnb', 'Petsitter']" @click="form.tipo = t" :class="form.tipo === t ? 'selected' : ''" class="visual-selector">{{ t }}</div>
+                        </div>
+                    </div>
+                    <input v-model="form.nome" placeholder="Nome do Hotel / Apartamento" class="input-bento">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input v-model="form.destino" placeholder="Cidade / País" class="input-bento">
+                        <input v-model="form.bairro" placeholder="Bairro / Região" class="input-bento">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase block mb-2">Segurança do Bairro</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div @click="form.seguranca = 'Tranquilo'" :class="form.seguranca === 'Tranquilo' ? '!bg-emerald-500 !border-emerald-500 !text-white' : 'text-slate-500'" class="visual-selector">🟢 Tranquilo</div>
+                            <div @click="form.seguranca = 'Médio'" :class="form.seguranca === 'Médio' ? '!bg-amber-500 !border-amber-500 !text-white' : 'text-slate-500'" class="visual-selector">🟡 Médio</div>
+                            <div @click="form.seguranca = 'Perigoso'" :class="form.seguranca === 'Perigoso' ? '!bg-red-500 !border-red-500 !text-white' : 'text-slate-500'" class="visual-selector">🔴 Perigoso</div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Check-in</label>
+                            <input v-model="form.checkIn" type="date" @change="autoCalcValor" class="input-bento">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Check-out</label>
+                            <input v-model="form.checkOut" type="date" @change="autoCalcValor" class="input-bento">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 block mb-1">R$ Total</label>
+                            <input v-model.number="form.valorBrl" type="number" step="0.01" @input="calcEuro" class="input-bento">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 block mb-1">€ Total</label>
+                            <input v-model.number="form.valorEur" type="number" step="0.01" @input="calcReal" class="input-bento">
+                        </div>
+                    </div>
+                    <div class="bg-slate-900 p-6 rounded-3xl">
+                        <label class="text-[10px] font-bold text-slate-500 uppercase block mb-3 text-center">Status da Reserva</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div @click="form.status = 'Wishlist'" :class="form.status === 'Wishlist' ? 'selected !bg-white/10 !text-white' : 'text-slate-500'" class="visual-selector">Wishlist</div>
+                            <div @click="form.status = 'Confirmado'" :class="form.status === 'Confirmado' ? '!bg-emerald-500 !border-emerald-500 !text-white' : 'text-slate-500'" class="visual-selector">✓ Confirmado</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pt-6 border-t mt-4 shrink-0">
+                    <button @click="salvar" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black uppercase hover:bg-indigo-600 transition">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+        createApp({
+            data() {
+                return { hospedagem: [], config: { cambio: 6.10 }, showModal: false, isEditing: false, form: {} }
+            },
+            computed: {
+                totalGeral() { return this.hospedagem.reduce((acc, h) => acc + (Number(h.valorBrl) || 0), 0); },
+                totalNoites() {
+                    return this.hospedagem.reduce((acc, h) => acc + (this.calcNoites(h) || 0), 0);
+                },
+                hospedagemOrdenada() {
+                    return [...this.hospedagem].sort((a, b) => {
+                        if (!a.checkIn) return 1;
+                        if (!b.checkIn) return -1;
+                        return new Date(a.checkIn) - new Date(b.checkIn);
+                    });
+                }
+            },
+            methods: {
+                calcNoites(h) {
+                    if (!h.checkIn || !h.checkOut) return 0;
+                    const diff = Math.round((new Date(h.checkOut) - new Date(h.checkIn)) / 86400000);
+                    return diff > 0 ? diff : 0;
+                },
+                calcEuro() { this.form.valorEur = (this.form.valorBrl / this.config.cambio).toFixed(2); },
+                calcReal() { this.form.valorBrl = (this.form.valorEur * this.config.cambio).toFixed(2); },
+                formatData(d) {
+                    if (!d) return '--';
+                    const p = d.split('-');
+                    return `${p[2]}/${p[1]}/${p[0]}`;
+                },
+                autoCalcValor() {
+                    // se já tem valorBrl/Eur, recalcula proporcional — não faz nada automaticamente
+                },
+                abrirModal(item = null) {
+                    if (item) {
+                        this.isEditing = true;
+                        this.form = { ...item };
+                    } else {
+                        this.isEditing = false;
+                        this.form = { id: Date.now(), tipo: 'Hotel', nome: '', destino: '', bairro: '', seguranca: 'Tranquilo', checkIn: '', checkOut: '', valorBrl: 0, valorEur: 0, status: 'Wishlist' };
+                    }
+                    this.showModal = true;
+                },
+                salvar() {
+                    const s = JSON.parse(localStorage.getItem('euro_data_master_v4') || '{}');
+                    if (this.isEditing) {
+                        const idx = this.hospedagem.findIndex(x => x.id === this.form.id);
+                        if (idx >= 0) this.hospedagem[idx] = { ...this.form };
+                    } else {
+                        this.hospedagem.push({ ...this.form });
+                    }
+                    s.hospedagem = this.hospedagem;
+                    localStorage.setItem('euro_data_master_v4', JSON.stringify(s));
+                    this.showModal = false;
+                },
+                deletar(id) {
+                    if (confirm('Apagar esta hospedagem?')) {
+                        this.hospedagem = this.hospedagem.filter(x => x.id !== id);
+                        const s = JSON.parse(localStorage.getItem('euro_data_master_v4') || '{}');
+                        s.hospedagem = this.hospedagem;
+                        localStorage.setItem('euro_data_master_v4', JSON.stringify(s));
+                    }
+                },
+                carregar() {
+                    const s = localStorage.getItem('euro_data_master_v4');
+                    if (s) {
+                        const p = JSON.parse(s);
+                        this.hospedagem = p.hospedagem || [];
+                        this.config = p.config || { cambio: 6.10 };
+                    }
+                }
+            },
+            mounted() { this.carregar(); }
+        }).mount('#app');
+    </script>
+</body>
+</html>

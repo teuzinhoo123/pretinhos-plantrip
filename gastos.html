@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pretinhos Eurotrip | Gastos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f4f7fb; color: #0f172a; }
+        .bento-card { background: white; border-radius: 28px; padding: 1.5rem; box-shadow: 0 10px 40px -10px rgba(0,0,0,0.04); border: 1px solid rgba(255,255,255,0.8); }
+        .nav-pill { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; padding: 10px 16px; border-radius: 100px; transition: all 0.2s; white-space: nowrap; }
+        .nav-active { color: #4f46e5 !important; background: #eef2ff !important; }
+        .input-bento { background-color: #f8fafc; border: 1px solid transparent; border-radius: 16px; padding: 14px 16px; font-weight: 600; color: #1e293b; width: 100%; outline: none; }
+        .visual-selector { border: 2px solid transparent; background: #f8fafc; border-radius: 16px; padding: 12px; cursor: pointer; transition: all 0.2s; text-align: center; font-size: 9px; font-weight: 800; text-transform: uppercase; color: #64748b; }
+        .visual-selector.selected { border-color: #4f46e5; background: #eef2ff; color: #4f46e5; }
+        .filter-pill { font-size: 9px; font-weight: 800; text-transform: uppercase; padding: 6px 14px; border-radius: 100px; cursor: pointer; transition: all 0.2s; border: 1.5px solid transparent; color: #64748b; background: white; }
+        .filter-pill.active { background: #0f172a; color: white; }
+        [v-cloak] { display: none; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="antialiased">
+    <div id="app" v-cloak>
+        <div class="max-w-6xl mx-auto p-4 md:p-8">
+            <header class="flex flex-col md:flex-row justify-between items-center gap-6 mb-10">
+                <h1 class="text-xl md:text-2xl font-black tracking-tighter italic text-indigo-600">Gastos Gerais</h1>
+                <nav class="flex gap-1 overflow-x-auto no-scrollbar w-full md:w-auto">
+                    <a href="index.html" class="nav-pill">Home</a>
+                    <a href="roteiro.html" class="nav-pill">Roteiro</a>
+                    <a href="transporte.html" class="nav-pill">Transporte</a>
+                    <a href="hospedagem.html" class="nav-pill">Hospedagem</a>
+                    <a href="checklist.html" class="nav-pill">Checklist</a>
+                    <a href="gastos.html" class="nav-pill nav-active">Gastos</a>
+                </nav>
+            </header>
+
+            <!-- CARDS DE RESUMO -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div class="bento-card !py-4 !px-5 bg-indigo-600 text-white col-span-2 md:col-span-1">
+                    <p class="text-[8px] uppercase font-black opacity-60">Total</p>
+                    <p class="font-black text-xl">R$ {{ totalGeralReal.toLocaleString('pt-BR') }}</p>
+                </div>
+                <div class="bento-card !py-4 !px-5">
+                    <p class="text-[8px] uppercase font-black text-slate-400">Pago (Wise)</p>
+                    <p class="font-black text-xl text-emerald-600">R$ {{ totalPagoReal.toLocaleString('pt-BR') }}</p>
+                </div>
+                <div class="bento-card !py-4 !px-5">
+                    <p class="text-[8px] uppercase font-black text-slate-400">Planejado</p>
+                    <p class="font-black text-xl text-amber-600">R$ {{ totalPlanejado.toLocaleString('pt-BR') }}</p>
+                </div>
+                <div class="bento-card !py-4 !px-5">
+                    <p class="text-[8px] uppercase font-black text-slate-400">Qtd.</p>
+                    <p class="font-black text-xl">{{ gastosFiltrados.length }}</p>
+                </div>
+            </div>
+
+            <!-- FILTROS + AÇÃO -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                <div class="flex flex-wrap gap-2">
+                    <button v-for="c in categoriasFiltro" :key="c" @click="filtroCategoria = c" :class="filtroCategoria === c ? 'active' : ''" class="filter-pill">{{ c }}</button>
+                </div>
+                <div class="flex gap-3">
+                    <select v-model="filtroStatus" class="text-[10px] font-black uppercase bg-white border rounded-2xl px-4 py-2 outline-none text-slate-600">
+                        <option value="">Todos os status</option>
+                        <option value="Pago">Pago</option>
+                        <option value="Planejado">Planejado</option>
+                    </select>
+                    <button @click="abrirModal()" class="bg-indigo-600 text-white text-xs px-6 py-3 rounded-2xl font-black uppercase">+ Novo</button>
+                </div>
+            </div>
+
+            <!-- LISTA DE GASTOS -->
+            <div class="space-y-3">
+                <div v-for="g in gastosFiltrados" :key="g.id" class="bento-card !p-5 flex justify-between items-center transition-all" :class="g.status === 'Pago' ? 'border-l-4 border-emerald-500' : 'border-l-4 border-amber-300 opacity-80'">
+                    <div class="min-w-0 mr-4">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-[8px] font-black uppercase bg-slate-100 text-slate-400 px-2 py-1 rounded">{{ g.categoria }}</span>
+                            <span class="text-[8px] font-black uppercase px-2 py-1 rounded" :class="g.status === 'Pago' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'">{{ g.status }}</span>
+                        </div>
+                        <h3 class="font-black text-slate-800 uppercase tracking-tighter truncate">{{ g.descricao }}</h3>
+                    </div>
+                    <div class="text-right flex items-center gap-3 shrink-0">
+                        <div>
+                            <p class="font-black text-lg">R$ {{ Number(g.valorBrl).toLocaleString('pt-BR') }}</p>
+                            <p class="text-[9px] text-slate-400 font-bold">≈ € {{ Number(g.valorEur).toLocaleString('pt-BR') }}</p>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <button @click="abrirModal(g)" class="text-[9px] font-black uppercase text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-xl">Editar</button>
+                            <button @click="deletar(g.id)" class="text-[9px] font-black uppercase text-red-400 bg-red-50 px-3 py-1.5 rounded-xl">Apagar</button>
+                        </div>
+                    </div>
+                </div>
+                <div v-if="!gastosFiltrados.length" class="bento-card text-center py-16 text-slate-400">
+                    <p class="font-black uppercase text-sm">Nenhum gasto encontrado</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL -->
+        <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+            <div class="bento-card w-full max-w-2xl flex flex-col max-h-[90vh]">
+                <div class="flex justify-between items-center mb-6 shrink-0">
+                    <h2 class="text-xl font-black text-slate-800 uppercase tracking-widest">Gasto</h2>
+                    <button @click="showModal = false" class="p-2 bg-slate-100 rounded-full">✕</button>
+                </div>
+                <div class="overflow-y-auto pr-2 space-y-6 flex-grow no-scrollbar">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase block mb-2">Categoria</label>
+                        <div class="grid grid-cols-3 md:grid-cols-5 gap-2">
+                            <div v-for="cat in ['Comida', 'Lazer', 'Compras', 'Documentos', 'Taxas']" :key="cat" @click="form.categoria = cat" :class="form.categoria === cat ? 'selected' : ''" class="visual-selector">{{ catEmoji(cat) }} {{ cat }}</div>
+                        </div>
+                    </div>
+                    <input v-model="form.descricao" placeholder="O que você comprou / pagou?" class="input-bento">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 block mb-1">Valor R$</label>
+                            <input v-model.number="form.valorBrl" type="number" step="0.01" @input="calcEuro" class="input-bento">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 block mb-1">Valor €</label>
+                            <input v-model.number="form.valorEur" type="number" step="0.01" @input="calcReal" class="input-bento">
+                        </div>
+                    </div>
+                    <div class="bg-slate-900 p-6 rounded-3xl">
+                        <label class="text-[10px] font-bold text-slate-500 uppercase block mb-3">Status de Pagamento</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div @click="form.status = 'Planejado'" :class="form.status === 'Planejado' ? '!bg-white/10 !border-white/30 !text-white' : 'text-slate-500'" class="visual-selector">Planejado</div>
+                            <div @click="form.status = 'Pago'" :class="form.status === 'Pago' ? '!bg-emerald-500 !border-emerald-500 !text-white' : 'text-slate-500'" class="visual-selector">✓ Pago</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pt-6 border-t mt-4 shrink-0">
+                    <button @click="salvar" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-indigo-600 transition">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+        createApp({
+            data() {
+                return {
+                    gastos: [],
+                    config: { cambio: 6.10 },
+                    showModal: false,
+                    isEditing: false,
+                    form: {},
+                    filtroCategoria: 'Todos',
+                    filtroStatus: ''
+                }
+            },
+            computed: {
+                categoriasFiltro() {
+                    return ['Todos', ...new Set(this.gastos.map(g => g.categoria).filter(Boolean))];
+                },
+                gastosFiltrados() {
+                    return this.gastos.filter(g => {
+                        const catOk = this.filtroCategoria === 'Todos' || g.categoria === this.filtroCategoria;
+                        const statusOk = !this.filtroStatus || g.status === this.filtroStatus;
+                        return catOk && statusOk;
+                    });
+                },
+                totalGeralReal() { return this.gastosFiltrados.reduce((acc, g) => acc + (Number(g.valorBrl) || 0), 0); },
+                totalPagoReal() { return this.gastosFiltrados.filter(g => g.status === 'Pago').reduce((acc, g) => acc + (Number(g.valorBrl) || 0), 0); },
+                totalPlanejado() { return this.gastosFiltrados.filter(g => g.status === 'Planejado').reduce((acc, g) => acc + (Number(g.valorBrl) || 0), 0); }
+            },
+            methods: {
+                catEmoji(cat) {
+                    return { 'Comida': '🍽', 'Lazer': '🎭', 'Compras': '🛍', 'Documentos': '📋', 'Taxas': '💳' }[cat] || '';
+                },
+                calcEuro() { this.form.valorEur = (this.form.valorBrl / this.config.cambio).toFixed(2); },
+                calcReal() { this.form.valorBrl = (this.form.valorEur * this.config.cambio).toFixed(2); },
+                abrirModal(item = null) {
+                    if (item) {
+                        this.isEditing = true;
+                        this.form = { ...item };
+                    } else {
+                        this.isEditing = false;
+                        this.form = { id: Date.now(), categoria: 'Comida', descricao: '', valorBrl: 0, valorEur: 0, status: 'Planejado' };
+                    }
+                    this.showModal = true;
+                },
+                salvar() {
+                    if (this.isEditing) {
+                        const idx = this.gastos.findIndex(x => x.id === this.form.id);
+                        if (idx >= 0) this.gastos[idx] = { ...this.form };
+                    } else {
+                        this.gastos.push({ ...this.form });
+                    }
+                    this.salvarStorage();
+                    this.showModal = false;
+                },
+                deletar(id) {
+                    if (confirm('Apagar este gasto?')) {
+                        this.gastos = this.gastos.filter(x => x.id !== id);
+                        this.salvarStorage();
+                    }
+                },
+                salvarStorage() {
+                    const s = JSON.parse(localStorage.getItem('euro_data_master_v4') || '{}');
+                    s.gastos = this.gastos;
+                    localStorage.setItem('euro_data_master_v4', JSON.stringify(s));
+                },
+                carregar() {
+                    const s = localStorage.getItem('euro_data_master_v4');
+                    if (s) {
+                        const p = JSON.parse(s);
+                        this.gastos = p.gastos || [];
+                        this.config = p.config || { cambio: 6.10 };
+                    }
+                }
+            },
+            mounted() { this.carregar(); }
+        }).mount('#app');
+    </script>
+</body>
+</html>

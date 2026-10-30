@@ -60,7 +60,7 @@
                     <div>
                         <div class="flex justify-between items-start">
                             <span class="text-[10px] font-black uppercase tracking-widest opacity-70">Saldo Wise (Real)</span>
-                            <button @click="showModalWise = true" class="bg-white/20 hover:bg-white/30 transition px-3 py-1.5 rounded-xl text-[9px] font-black uppercase">+ Aporte</button>
+                            <button @click="irGastos" class="bg-white/20 hover:bg-white/30 transition px-3 py-1.5 rounded-xl text-[9px] font-black uppercase">+ Aporte</button>
                         </div>
                         <h2 class="text-4xl font-black mt-2 tracking-tighter">R$ {{ saldoRealWise.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2}) }}</h2>
                         <p class="text-[11px] font-bold text-indigo-100 uppercase mt-1 italic">≈ € {{ (saldoRealWise / config.cambio).toFixed(2) }}</p>
@@ -221,6 +221,7 @@
         </div>
     </div>
 
+    <script src="store.js"></script>
     <script>
         const { createApp } = Vue;
         createApp({
@@ -235,7 +236,7 @@
             },
             computed: {
                 totalPagoConfirmado() {
-                    return (this.gastos || []).filter(g => g.status === 'Pago').reduce((acc, g) => acc + (Number(g.valorBrl) || 0), 0);
+                    return Store.fin().pago;
                 },
                 totalTransporte() {
                     return (this.transportes || []).reduce((acc, x) => acc + (Number(x.valorBrl) || 0), 0);
@@ -244,13 +245,10 @@
                     return (this.hospedagem || []).reduce((acc, x) => acc + (Number(x.valorBrl) || 0), 0);
                 },
                 saldoRealWise() {
-                    return (this.config.saldoWise || 0) - this.totalPagoConfirmado;
+                    return Store.fin().disponivel;
                 },
                 totalGeralProjetado() {
-                    const t = this.totalTransporte;
-                    const h = this.totalHospedagem;
-                    const g = (this.gastos || []).reduce((acc, x) => acc + (Number(x.valorBrl) || 0), 0);
-                    return t + h + g;
+                    return Store.fin().comp;
                 },
                 percentualOrcamento() {
                     if (!this.config.orcamentoTotal) return 0;
@@ -281,6 +279,7 @@
                     const p = d.split('-');
                     return `${p[2]}/${p[1]}`;
                 },
+                irGastos() { window.location.href = 'gastos.html#aportes'; },
                 adicionarSaldoWise() {
                     this.config.saldoWise = (this.config.saldoWise || 0) + (this.valorNovoAporte || 0);
                     this.valorNovoAporte = 0;

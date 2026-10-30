@@ -8,213 +8,236 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f4f7fb; color: #0f172a; }
+        body { font-family: 'Inter', sans-serif; background-color: #f4f7fb; color: #0f172a; transition: background .3s; }
         .bento-card { background: white; border-radius: 28px; padding: 1.5rem; box-shadow: 0 10px 40px -10px rgba(0,0,0,0.04); border: 1px solid rgba(255,255,255,0.8); }
-        .nav-pill { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; padding: 10px 16px; border-radius: 100px; transition: all 0.2s; white-space: nowrap; }
+        .bento-card-primary { background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); color: white; border-radius: 28px; padding: 1.5rem; box-shadow: 0 20px 40px -15px rgba(59,130,246,0.35); }
+        .nav-pill { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; padding: 10px 16px; border-radius: 100px; white-space: nowrap; }
         .nav-active { color: #4f46e5 !important; background: #eef2ff !important; }
         .input-bento { background-color: #f8fafc; border: 1px solid transparent; border-radius: 16px; padding: 14px 16px; font-weight: 600; color: #1e293b; width: 100%; outline: none; }
-        .visual-selector { border: 2px solid transparent; background: #f8fafc; border-radius: 16px; padding: 12px; cursor: pointer; transition: all 0.2s; text-align: center; font-size: 9px; font-weight: 800; text-transform: uppercase; color: #64748b; }
+        .visual-selector { border: 2px solid transparent; background: #f8fafc; border-radius: 16px; padding: 12px; cursor: pointer; text-align: center; font-size: 9px; font-weight: 800; text-transform: uppercase; color: #64748b; }
         .visual-selector.selected { border-color: #4f46e5; background: #eef2ff; color: #4f46e5; }
-        .filter-pill { font-size: 9px; font-weight: 800; text-transform: uppercase; padding: 6px 14px; border-radius: 100px; cursor: pointer; transition: all 0.2s; border: 1.5px solid transparent; color: #64748b; background: white; }
+        .filter-pill { font-size: 9px; font-weight: 800; text-transform: uppercase; padding: 6px 14px; border-radius: 100px; cursor: pointer; color: #64748b; background: white; }
         .filter-pill.active { background: #0f172a; color: white; }
+        .bar { transition: width .7s cubic-bezier(.4,0,.2,1); }
         [v-cloak] { display: none; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="antialiased">
-    <div id="app" v-cloak>
-        <div class="max-w-6xl mx-auto p-4 md:p-8">
-            <header class="flex flex-col md:flex-row justify-between items-center gap-6 mb-10">
-                <h1 class="text-xl md:text-2xl font-black tracking-tighter italic text-indigo-600">Gastos Gerais</h1>
-                <nav class="flex gap-1 overflow-x-auto no-scrollbar w-full md:w-auto">
-                    <a href="index.html" class="nav-pill">Home</a>
-                    <a href="roteiro.html" class="nav-pill">Roteiro</a>
-                    <a href="transporte.html" class="nav-pill">Transporte</a>
-                    <a href="hospedagem.html" class="nav-pill">Hospedagem</a>
-                    <a href="checklist.html" class="nav-pill">Checklist</a>
-                    <a href="gastos.html" class="nav-pill nav-active">Gastos</a>
-                </nav>
-            </header>
+<div id="app" v-cloak>
+    <div class="max-w-6xl mx-auto p-4 md:p-8 pb-28">
+        <header class="flex flex-col md:flex-row justify-between items-center gap-6 mb-10">
+            <h1 class="text-xl md:text-2xl font-black tracking-tighter italic text-indigo-600">Gastos Gerais</h1>
+            <nav class="flex gap-1 overflow-x-auto no-scrollbar w-full md:w-auto">
+                <a href="index.html" class="nav-pill">Home</a>
+                <a href="roteiro.html" class="nav-pill">Roteiro</a>
+                <a href="transporte.html" class="nav-pill">Transporte</a>
+                <a href="hospedagem.html" class="nav-pill">Hospedagem</a>
+                <a href="checklist.html" class="nav-pill">Checklist</a>
+                <a href="gastos.html" class="nav-pill nav-active">Gastos</a>
+            </nav>
+        </header>
 
-            <!-- CARDS DE RESUMO -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div class="bento-card !py-4 !px-5 bg-indigo-600 text-white col-span-2 md:col-span-1">
-                    <p class="text-[8px] uppercase font-black opacity-60">Total</p>
-                    <p class="font-black text-xl">R$ {{ totalGeralReal.toLocaleString('pt-BR') }}</p>
-                </div>
-                <div class="bento-card !py-4 !px-5">
-                    <p class="text-[8px] uppercase font-black text-slate-400">Pago (Wise)</p>
-                    <p class="font-black text-xl text-emerald-600">R$ {{ totalPagoReal.toLocaleString('pt-BR') }}</p>
-                </div>
-                <div class="bento-card !py-4 !px-5">
-                    <p class="text-[8px] uppercase font-black text-slate-400">Planejado</p>
-                    <p class="font-black text-xl text-amber-600">R$ {{ totalPlanejado.toLocaleString('pt-BR') }}</p>
-                </div>
-                <div class="bento-card !py-4 !px-5">
-                    <p class="text-[8px] uppercase font-black text-slate-400">Qtd.</p>
-                    <p class="font-black text-xl">{{ gastosFiltrados.length }}</p>
-                </div>
+        <!-- AVISOS -->
+        <div v-if="avisos.length" class="space-y-2 mb-6">
+            <div v-for="a in avisos" :key="a" class="bento-card !p-4 !bg-amber-50 text-xs font-bold text-amber-700">{{ a }}</div>
+        </div>
+
+        <!-- META -->
+        <div class="bento-card-primary mb-6">
+            <div class="flex justify-between items-start">
+                <span class="text-[10px] font-black uppercase tracking-widest opacity-70">Meta da viagem</span>
+                <button @click="modalAjustes = true" class="bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-xl text-[9px] font-black uppercase">Ajustar meta</button>
             </div>
-
-            <!-- FILTROS + AÇÃO -->
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-                <div class="flex flex-wrap gap-2">
-                    <button v-for="c in categoriasFiltro" :key="c" @click="filtroCategoria = c" :class="filtroCategoria === c ? 'active' : ''" class="filter-pill">{{ c }}</button>
-                </div>
-                <div class="flex gap-3">
-                    <select v-model="filtroStatus" class="text-[10px] font-black uppercase bg-white border rounded-2xl px-4 py-2 outline-none text-slate-600">
-                        <option value="">Todos os status</option>
-                        <option value="Pago">Pago</option>
-                        <option value="Planejado">Planejado</option>
-                    </select>
-                    <button @click="abrirModal()" class="bg-indigo-600 text-white text-xs px-6 py-3 rounded-2xl font-black uppercase">+ Novo</button>
-                </div>
+            <h2 class="text-4xl font-black mt-2 tracking-tighter">{{ brl(f.meta) }}</h2>
+            <div class="w-full bg-white/20 h-4 rounded-full overflow-hidden mt-4">
+                <div class="bar bg-white h-full" :style="{ width: f.pctMeta + '%' }"></div>
             </div>
+            <p class="text-[11px] font-bold mt-2 opacity-90">Já juntamos {{ brl(f.juntado) }} ({{ f.pctMeta }}%). Faltam {{ brl(f.faltaMeta) }} para a meta.</p>
+        </div>
 
-            <!-- LISTA DE GASTOS -->
-            <div class="space-y-3">
-                <div v-for="g in gastosFiltrados" :key="g.id" class="bento-card !p-5 flex justify-between items-center transition-all" :class="g.status === 'Pago' ? 'border-l-4 border-emerald-500' : 'border-l-4 border-amber-300 opacity-80'">
-                    <div class="min-w-0 mr-4">
-                        <div class="flex items-center gap-2 mb-1">
-                            <span class="text-[8px] font-black uppercase bg-slate-100 text-slate-400 px-2 py-1 rounded">{{ g.categoria }}</span>
-                            <span class="text-[8px] font-black uppercase px-2 py-1 rounded" :class="g.status === 'Pago' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'">{{ g.status }}</span>
-                        </div>
-                        <h3 class="font-black text-slate-800 uppercase tracking-tighter truncate">{{ g.descricao }}</h3>
-                    </div>
-                    <div class="text-right flex items-center gap-3 shrink-0">
-                        <div>
-                            <p class="font-black text-lg">R$ {{ Number(g.valorBrl).toLocaleString('pt-BR') }}</p>
-                            <p class="text-[9px] text-slate-400 font-bold">≈ € {{ Number(g.valorEur).toLocaleString('pt-BR') }}</p>
-                        </div>
-                        <div class="flex flex-col gap-1">
-                            <button @click="abrirModal(g)" class="text-[9px] font-black uppercase text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-xl">Editar</button>
-                            <button @click="deletar(g.id)" class="text-[9px] font-black uppercase text-red-400 bg-red-50 px-3 py-1.5 rounded-xl">Apagar</button>
-                        </div>
-                    </div>
+        <!-- RESUMO -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div class="bento-card !py-4 !px-5"><p class="text-[8px] uppercase font-black text-slate-400">Juntado</p><p class="font-black text-xl text-indigo-600">{{ brl(f.juntado) }}</p></div>
+            <div class="bento-card !py-4 !px-5"><p class="text-[8px] uppercase font-black text-slate-400">Já gasto (pago)</p><p class="font-black text-xl text-emerald-600">{{ brl(f.pago) }}</p></div>
+            <div class="bento-card !py-4 !px-5"><p class="text-[8px] uppercase font-black text-slate-400">Disponível agora</p><p class="font-black text-xl" :class="f.disponivel < 0 ? 'text-red-500' : ''">{{ brl(f.disponivel) }}</p></div>
+            <div class="bento-card !py-4 !px-5"><p class="text-[8px] uppercase font-black text-slate-400">Ainda a pagar</p><p class="font-black text-xl text-amber-600">{{ brl(f.aPagar) }}</p></div>
+        </div>
+
+        <!-- DIVISÃO ENTRE OS DOIS -->
+        <div id="aportes" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div v-for="(p, i) in f.pessoas" :key="i" class="bento-card">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-black text-slate-800 text-lg">{{ p.nome }}</h3>
+                    <button @click="abrirAporte(i)" class="text-[9px] font-black uppercase text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-xl">+ Aporte</button>
                 </div>
-                <div v-if="!gastosFiltrados.length" class="bento-card text-center py-16 text-slate-400">
-                    <p class="font-black uppercase text-sm">Nenhum gasto encontrado</p>
+                <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden"><div class="bar bg-indigo-500 h-full" :style="{ width: p.pct + '%' }"></div></div>
+                <div class="grid grid-cols-3 gap-2 mt-4 text-center">
+                    <div><p class="text-[8px] uppercase font-black text-slate-400">Aportou</p><p class="font-black text-sm">{{ brl(p.aportado) }}</p></div>
+                    <div><p class="text-[8px] uppercase font-black text-slate-400">Metade da meta</p><p class="font-black text-sm">{{ brl(p.cota) }}</p></div>
+                    <div><p class="text-[8px] uppercase font-black text-slate-400">Falta aportar</p><p class="font-black text-sm" :class="p.falta ? 'text-amber-600' : 'text-emerald-600'">{{ p.falta ? brl(p.falta) : 'Completo' }}</p></div>
                 </div>
             </div>
         </div>
+        <div class="bento-card mb-8">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-400">Aportes no Wise</h3>
+                <button @click="abrirAporte('Ambos')" class="text-[9px] font-black uppercase text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-xl">+ Aporte dos dois</button>
+            </div>
+            <p v-if="!d.aportes.length" class="text-sm text-slate-400 font-bold">Nenhum aporte ainda. Registre o primeiro para acompanhar a meta.</p>
+            <div v-for="a in aportesOrdenados" :key="a.id" class="flex items-center justify-between py-2 border-b border-slate-50 last:border-0">
+                <div>
+                    <p class="text-sm font-black">{{ brl(a.valor) }} <span class="text-[9px] uppercase text-slate-400 ml-1">{{ a.pessoa === 'Ambos' ? 'Os dois (50% cada)' : d.config.pessoas[a.pessoa] }}</span></p>
+                    <p class="text-[10px] text-slate-400 font-bold">{{ dataBr(a.data) }}{{ a.nota ? ' | ' + a.nota : '' }}</p>
+                </div>
+                <button @click="apagarAporte(a.id)" class="text-[9px] font-black uppercase text-red-400 bg-red-50 px-3 py-1.5 rounded-xl">Apagar</button>
+            </div>
+        </div>
 
-        <!-- MODAL -->
-        <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-            <div class="bento-card w-full max-w-2xl flex flex-col max-h-[90vh]">
-                <div class="flex justify-between items-center mb-6 shrink-0">
-                    <h2 class="text-xl font-black text-slate-800 uppercase tracking-widest">Gasto</h2>
-                    <button @click="showModal = false" class="p-2 bg-slate-100 rounded-full">✕</button>
+        <!-- EXTRATO -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+            <div class="flex flex-wrap gap-2">
+                <button v-for="c in categorias" :key="c" @click="filtroCategoria = c" :class="{ active: filtroCategoria === c }" class="filter-pill">{{ c }}</button>
+            </div>
+            <div class="flex gap-3">
+                <select v-model="filtroStatus" class="text-[10px] font-black uppercase bg-white border rounded-2xl px-4 py-2 outline-none text-slate-600">
+                    <option value="">Todos os status</option><option value="Pago">Pago</option><option value="Planejado">A pagar</option>
+                </select>
+                <button @click="abrirGasto()" class="bg-indigo-600 text-white text-xs px-6 py-3 rounded-2xl font-black uppercase">+ Novo gasto</button>
+            </div>
+        </div>
+        <p class="text-[10px] font-bold text-slate-400 mb-3">Transportes, hospedagens e passeios aparecem aqui automaticamente. Para editá-los, use a página de origem.</p>
+        <div class="space-y-3">
+            <div v-for="g in extrato" :key="g.id" class="bento-card !p-5 flex justify-between items-center" :class="g.pago ? 'border-l-4 border-emerald-500' : 'border-l-4 border-amber-300 opacity-80'">
+                <div class="min-w-0 mr-4">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-[8px] font-black uppercase bg-slate-100 text-slate-400 px-2 py-1 rounded">{{ g.fonte }}</span>
+                        <span class="text-[8px] font-black uppercase px-2 py-1 rounded" :class="g.pago ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'">{{ g.pago ? 'Pago' : 'A pagar' }}</span>
+                    </div>
+                    <h3 class="font-black text-slate-800 uppercase tracking-tighter truncate">{{ g.desc }}</h3>
                 </div>
-                <div class="overflow-y-auto pr-2 space-y-6 flex-grow no-scrollbar">
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase block mb-2">Categoria</label>
-                        <div class="grid grid-cols-3 md:grid-cols-5 gap-2">
-                            <div v-for="cat in ['Comida', 'Lazer', 'Compras', 'Documentos', 'Taxas']" :key="cat" @click="form.categoria = cat" :class="form.categoria === cat ? 'selected' : ''" class="visual-selector">{{ catEmoji(cat) }} {{ cat }}</div>
-                        </div>
+                <div class="text-right flex items-center gap-3 shrink-0">
+                    <div><p class="font-black text-lg">{{ brl(g.brl) }}</p><p class="text-[9px] text-slate-400 font-bold">≈ {{ eur(g.eur || g.brl / cambio) }}</p></div>
+                    <div class="flex flex-col gap-1">
+                        <template v-if="g.manual">
+                            <button @click="abrirGasto(g.ref)" class="text-[9px] font-black uppercase text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-xl">Editar</button>
+                            <button @click="apagarGasto(g.ref.id)" class="text-[9px] font-black uppercase text-red-400 bg-red-50 px-3 py-1.5 rounded-xl">Apagar</button>
+                        </template>
+                        <a v-else :href="g.link" class="text-[9px] font-black uppercase text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-xl text-center">Abrir</a>
                     </div>
-                    <input v-model="form.descricao" placeholder="O que você comprou / pagou?" class="input-bento">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="text-[10px] font-bold text-slate-400 block mb-1">Valor R$</label>
-                            <input v-model.number="form.valorBrl" type="number" step="0.01" @input="calcEuro" class="input-bento">
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-slate-400 block mb-1">Valor €</label>
-                            <input v-model.number="form.valorEur" type="number" step="0.01" @input="calcReal" class="input-bento">
-                        </div>
-                    </div>
-                    <div class="bg-slate-900 p-6 rounded-3xl">
-                        <label class="text-[10px] font-bold text-slate-500 uppercase block mb-3">Status de Pagamento</label>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div @click="form.status = 'Planejado'" :class="form.status === 'Planejado' ? '!bg-white/10 !border-white/30 !text-white' : 'text-slate-500'" class="visual-selector">Planejado</div>
-                            <div @click="form.status = 'Pago'" :class="form.status === 'Pago' ? '!bg-emerald-500 !border-emerald-500 !text-white' : 'text-slate-500'" class="visual-selector">✓ Pago</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="pt-6 border-t mt-4 shrink-0">
-                    <button @click="salvar" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-indigo-600 transition">Salvar</button>
                 </div>
             </div>
+            <div v-if="!extrato.length" class="bento-card text-center py-16 text-slate-400"><p class="font-black uppercase text-sm">Nenhum gasto encontrado</p></div>
         </div>
     </div>
 
-    <script>
-        const { createApp } = Vue;
-        createApp({
-            data() {
-                return {
-                    gastos: [],
-                    config: { cambio: 6.10 },
-                    showModal: false,
-                    isEditing: false,
-                    form: {},
-                    filtroCategoria: 'Todos',
-                    filtroStatus: ''
-                }
+    <!-- MODAL GASTO -->
+    <div v-if="modalGasto" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+        <div class="bento-card w-full max-w-xl flex flex-col max-h-[90vh]">
+            <div class="flex justify-between items-center mb-6"><h2 class="text-xl font-black uppercase tracking-widest">Gasto</h2><button @click="modalGasto = false" class="p-2 bg-slate-100 rounded-full">✕</button></div>
+            <div class="overflow-y-auto space-y-5 no-scrollbar">
+                <div class="grid grid-cols-3 gap-2">
+                    <div v-for="c in ['Comida','Lazer','Compras','Documentos','Taxas','Outros']" :key="c" @click="form.categoria = c" :class="{ selected: form.categoria === c }" class="visual-selector">{{ c }}</div>
+                </div>
+                <input v-model="form.descricao" placeholder="O que foi pago ou será pago?" class="input-bento">
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="text-[10px] font-bold text-slate-400 block mb-1">Valor R$</label><input v-model.number="form.valorBrl" type="number" step="0.01" @input="form.valorEur = +(form.valorBrl / cambio).toFixed(2)" class="input-bento"></div>
+                    <div><label class="text-[10px] font-bold text-slate-400 block mb-1">Valor €</label><input v-model.number="form.valorEur" type="number" step="0.01" @input="form.valorBrl = +(form.valorEur * cambio).toFixed(2)" class="input-bento"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div @click="form.status = 'Planejado'" :class="{ selected: form.status === 'Planejado' }" class="visual-selector">A pagar</div>
+                    <div @click="form.status = 'Pago'" :class="{ selected: form.status === 'Pago' }" class="visual-selector">Pago</div>
+                </div>
+            </div>
+            <button @click="salvarGasto" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-indigo-600 transition mt-6">Salvar gasto</button>
+        </div>
+    </div>
+
+    <!-- MODAL APORTE -->
+    <div v-if="modalAporte" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+        <div class="bento-card w-full max-w-md">
+            <div class="flex justify-between items-center mb-6"><h2 class="text-xl font-black uppercase tracking-widest">Novo aporte</h2><button @click="modalAporte = false" class="p-2 bg-slate-100 rounded-full">✕</button></div>
+            <div class="space-y-4">
+                <select v-model="formAporte.pessoa" class="input-bento">
+                    <option :value="0">{{ d.config.pessoas[0] }}</option><option :value="1">{{ d.config.pessoas[1] }}</option><option value="Ambos">Os dois (50% cada)</option>
+                </select>
+                <input v-model.number="formAporte.valor" type="number" step="0.01" placeholder="Valor em R$" class="input-bento text-2xl font-black">
+                <input v-model="formAporte.data" type="date" class="input-bento">
+                <input v-model="formAporte.nota" placeholder="Observação (opcional)" class="input-bento">
+            </div>
+            <button @click="salvarAporte" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-indigo-600 transition mt-6">Registrar aporte</button>
+        </div>
+    </div>
+
+    <!-- MODAL AJUSTES -->
+    <div v-if="modalAjustes" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+        <div class="bento-card w-full max-w-md">
+            <div class="flex justify-between items-center mb-6"><h2 class="text-xl font-black uppercase tracking-widest">Meta e nomes</h2><button @click="modalAjustes = false" class="p-2 bg-slate-100 rounded-full">✕</button></div>
+            <div class="space-y-4">
+                <div><label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Meta total (R$)</label><input v-model.number="d.config.orcamentoTotal" type="number" class="input-bento text-2xl font-black text-indigo-600"></div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Pessoa 1</label><input v-model="d.config.pessoas[0]" class="input-bento"></div>
+                    <div><label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Pessoa 2</label><input v-model="d.config.pessoas[1]" class="input-bento"></div>
+                </div>
+            </div>
+            <button @click="Store.save('config'); modalAjustes = false" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-indigo-600 transition mt-6">Salvar</button>
+        </div>
+    </div>
+</div>
+
+<script src="store.js"></script>
+<script>
+    Vue.createApp({
+        data() {
+            return { d: Store.data, Store, modalGasto: false, modalAporte: false, modalAjustes: false, form: {}, formAporte: {}, filtroCategoria: 'Todos', filtroStatus: '' };
+        },
+        computed: {
+            cambio() { return Store.num(this.d.config.cambio) || 6.10; },
+            f() { return Store.fin(this.d); },
+            todos() { return Store.itens(this.d); },
+            categorias() { return ['Todos', ...new Set(this.todos.map(i => i.fonte))]; },
+            extrato() {
+                return this.todos.filter(i => (this.filtroCategoria === 'Todos' || i.fonte === this.filtroCategoria)
+                    && (!this.filtroStatus || (this.filtroStatus === 'Pago') === i.pago));
             },
-            computed: {
-                categoriasFiltro() {
-                    return ['Todos', ...new Set(this.gastos.map(g => g.categoria).filter(Boolean))];
-                },
-                gastosFiltrados() {
-                    return this.gastos.filter(g => {
-                        const catOk = this.filtroCategoria === 'Todos' || g.categoria === this.filtroCategoria;
-                        const statusOk = !this.filtroStatus || g.status === this.filtroStatus;
-                        return catOk && statusOk;
-                    });
-                },
-                totalGeralReal() { return this.gastosFiltrados.reduce((acc, g) => acc + (Number(g.valorBrl) || 0), 0); },
-                totalPagoReal() { return this.gastosFiltrados.filter(g => g.status === 'Pago').reduce((acc, g) => acc + (Number(g.valorBrl) || 0), 0); },
-                totalPlanejado() { return this.gastosFiltrados.filter(g => g.status === 'Planejado').reduce((acc, g) => acc + (Number(g.valorBrl) || 0), 0); }
+            aportesOrdenados() { return [...this.d.aportes].sort((a, b) => (b.data || '').localeCompare(a.data || '') || b.id - a.id); },
+            avisos() {
+                const f = this.f, v = [];
+                if (f.folgaMeta < 0) v.push(`Os gastos previstos passam da meta em ${Store.brl(-f.folgaMeta)}.`);
+                if (f.descoberto > 0) v.push(`Faltam ${Store.brl(f.descoberto)} no Wise para cobrir o que ainda está a pagar.`);
+                return v;
+            }
+        },
+        methods: {
+            brl: Store.brl, eur: Store.eur,
+            dataBr(s) { return s ? s.split('-').reverse().join('/') : 'Sem data'; },
+            abrirGasto(item = null) {
+                this.form = item ? { ...item } : { id: Store.id(), categoria: 'Comida', descricao: '', valorBrl: 0, valorEur: 0, status: 'Planejado' };
+                this.modalGasto = true;
             },
-            methods: {
-                catEmoji(cat) {
-                    return { 'Comida': '🍽', 'Lazer': '🎭', 'Compras': '🛍', 'Documentos': '📋', 'Taxas': '💳' }[cat] || '';
-                },
-                calcEuro() { this.form.valorEur = (this.form.valorBrl / this.config.cambio).toFixed(2); },
-                calcReal() { this.form.valorBrl = (this.form.valorEur * this.config.cambio).toFixed(2); },
-                abrirModal(item = null) {
-                    if (item) {
-                        this.isEditing = true;
-                        this.form = { ...item };
-                    } else {
-                        this.isEditing = false;
-                        this.form = { id: Date.now(), categoria: 'Comida', descricao: '', valorBrl: 0, valorEur: 0, status: 'Planejado' };
-                    }
-                    this.showModal = true;
-                },
-                salvar() {
-                    if (this.isEditing) {
-                        const idx = this.gastos.findIndex(x => x.id === this.form.id);
-                        if (idx >= 0) this.gastos[idx] = { ...this.form };
-                    } else {
-                        this.gastos.push({ ...this.form });
-                    }
-                    this.salvarStorage();
-                    this.showModal = false;
-                },
-                deletar(id) {
-                    if (confirm('Apagar este gasto?')) {
-                        this.gastos = this.gastos.filter(x => x.id !== id);
-                        this.salvarStorage();
-                    }
-                },
-                salvarStorage() {
-                    const s = JSON.parse(localStorage.getItem('euro_data_master_v4') || '{}');
-                    s.gastos = this.gastos;
-                    localStorage.setItem('euro_data_master_v4', JSON.stringify(s));
-                },
-                carregar() {
-                    const s = localStorage.getItem('euro_data_master_v4');
-                    if (s) {
-                        const p = JSON.parse(s);
-                        this.gastos = p.gastos || [];
-                        this.config = p.config || { cambio: 6.10 };
-                    }
-                }
+            salvarGasto() {
+                const i = this.d.gastos.findIndex(x => x.id === this.form.id);
+                if (i >= 0) this.d.gastos[i] = { ...this.form }; else this.d.gastos.push({ ...this.form });
+                Store.save('gastos'); this.modalGasto = false;
             },
-            mounted() { this.carregar(); }
-        }).mount('#app');
-    </script>
+            apagarGasto(id) {
+                if (!confirm('Apagar este gasto?')) return;
+                this.d.gastos = this.d.gastos.filter(x => x.id !== id); Store.save('gastos');
+            },
+            abrirAporte(pessoa) {
+                this.formAporte = { id: Store.id(), pessoa, valor: null, data: new Date().toISOString().slice(0, 10), nota: '' };
+                this.modalAporte = true;
+            },
+            salvarAporte() {
+                if (!(Store.num(this.formAporte.valor) > 0)) return alert('Informe um valor maior que zero.');
+                this.d.aportes.push({ ...this.formAporte }); Store.save('aportes'); this.modalAporte = false;
+            },
+            apagarAporte(id) {
+                if (!confirm('Apagar este aporte?')) return;
+                this.d.aportes = this.d.aportes.filter(x => x.id !== id); Store.save('aportes');
+            }
+        }
+    }).mount('#app');
+</script>
 </body>
 </html>
